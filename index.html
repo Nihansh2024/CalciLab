@@ -20,7 +20,6 @@
       --card: #0f0f16;
       --border: #1a1a24;
       --danger: #ff4d6a;
-      --warning: #ffa500;
     }
 
     * { box-sizing: border-box; }
@@ -50,13 +49,10 @@
       border-bottom: 1px solid var(--border);
     }
 
-    /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
-    /* Grid Layout */
     .calc-card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -67,6 +63,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
+      min-height: 80px;
     }
 
     .calc-card::before {
@@ -104,7 +101,6 @@
       border-color: var(--accent);
     }
 
-    /* Modal */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -276,7 +272,6 @@
   <script>
     // --- DATA: Complete Calculator List ---
     
-    // Helper to create standard inputs
     const I = (id, label, ph, def) => ({ id, label, placeholder: ph, type: 'number', default: def });
     const T = (id, label, ph) => ({ id, label, placeholder: ph, type: 'text' });
     const D = (id, label) => ({ id, label, type: 'date' });
@@ -435,7 +430,7 @@
       { name: "Basic Calculator", category: "math", inputs: [I('a', 'A', '10'), I('b', 'B', '5'), T('op', 'Op', '+')], formula: (i) => `Result: ${i.op==='+'?i.a+i.b:i.op==='-'?i.a-i.b:i.op==='*'?i.a*i.b:i.a/i.b}` },
       { name: "Long Division Calculator", category: "math", inputs: [I('div', 'Dividend', '100'), I('dvs', 'Divisor', '7')], formula: (i) => `Quotient: ${Math.floor(i.div/i.dvs)}, Remainder: ${i.div%i.dvs}` },
       { name: "Average Calculator", category: "math", inputs: [T('nums', 'Numbers', '10, 20, 30')], formula: (i) => { const arr=i.nums.split(',').map(Number); return `Average: ${(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2)}`; }},
-      { name: "P-value Calculator", category: "math", inputs: [I('z', 'Z-Score', '1.96')], formula: (i) => `P-Value (One-tail): ${(1 - (0.5*(1+math.erf(i.z/Math.sqrt(2))))).toFixed(4)} (Approx)` },
+      { name: "P-value Calculator", category: "math", inputs: [I('z', 'Z-Score', '1.96')], formula: (i) => `P-Value (Approx): ${ (Math.exp(-0.717*i.z - 0.416*i.z*i.z)).toFixed(4) }` },
 
       // --- OTHER ---
       { name: "Age Calculator", category: "other", inputs: [D('dob', 'Date of Birth')], formula: (i) => { const d=new Date(i.dob); const age=Date.now()-d; return `Age: ${Math.floor(age/(365.25*24*3600*1000))} Years`; }},
@@ -475,7 +470,7 @@
       { name: "Speed Calculator", category: "other", inputs: [I('d', 'Distance (km)', '100'), I('t', 'Time (h)', '1.5')], formula: (i) => `Speed: ${(i.d/i.t).toFixed(2)} km/h` },
       { name: "Molarity Calculator", category: "other", inputs: [I('mol', 'Moles', '0.5'), I('lit', 'Liters', '2')], formula: (i) => `Molarity: ${(i.mol/i.lit).toFixed(2)} M` },
       { name: "Molecular Weight Calculator", category: "other", inputs: [T('f', 'Formula (e.g. H2O)', 'H2O')], formula: (i) => `Approx Weight: ${i.f.length*10} g/mol (Demo)` },
-      { name: "Roman Numeral Converter", category: "other", inputs: [I('n', 'Number', '42')], formula: (i) => { const r=['M','CM','D','CD','C','XC','L','XL','X','IX','V','IV','I']; const v=[1000,900,500,400,100,90,50,40,10,9,5,4,1]; let s='', num=i.n; r.forEach((k,j)=>while(num>=v[j]){s+=r[j];num-=v[j];}); return s; } }, // Simplified logic in formula
+      { name: "Roman Numeral Converter", category: "other", inputs: [I('n', 'Number', '42')], formula: (i) => { const r=['M','CM','D','CD','C','XC','L','XL','X','IX','V','IV','I']; const v=[1000,900,500,400,100,90,50,40,10,9,5,4,1]; let s='', num=i.n; r.forEach((k,j)=>{ while(num>=v[j]){s+=r[j];num-=v[j];} }); return s; } },
       { name: "Golf Handicap Calculator", category: "other", inputs: [I('score', 'Score', '85'), I('rat', 'Course Rating', '72'), I('slo', 'Slope', '113')], formula: (i) => `Handicap Diff: ${((i.score-i.rat)*113/i.slo).toFixed(1)}` },
       { name: "Sleep Calculator", category: "other", inputs: [I('h', 'Hours Slept', '7'), I('age', 'Age', '30')], formula: (i) => `Quality: ${i.h>=7?'Good':'Poor'}. Recommended for age: ${i.age<18?9:i.age<65?8:7}h` },
       { name: "Tire Size Calculator", category: "other", inputs: [I('w', 'Width (mm)', '225'), I('r', 'Aspect (%)', '50'), I('rim', 'Rim (in)', '17')], formula: (i) => `Diameter: ${((i.w*i.r/25.4*2)+i.rim).toFixed(1)} in` },
