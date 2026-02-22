@@ -19,7 +19,6 @@
       --accent-glow: rgba(0, 255, 200, 0.3);
       --card: #0f0f16;
       --border: #1a1a24;
-      --danger: #ff4d6a;
     }
 
     * { box-sizing: border-box; }
@@ -100,6 +99,19 @@
         transition: all 0.3s ease;
         z-index: 1;
         pointer-events: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .card-icon svg {
+        width: 36px;
+        height: 36px;
+        stroke: var(--accent);
+        fill: none;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
     }
 
     .category-pill {
@@ -289,101 +301,159 @@
   </div>
 
   <script>
+    // --- ICON LIBRARY ---
+    const getToolIcon = (name) => {
+      const icons = {
+        // Financial
+        'mortgage': '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline>',
+        'loan': '<rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M12 9v6"></path><path d="M9 12h6"></path>',
+        'auto': '<path d="M5 17h14v-5l-2-4H7l-2 4v5z"></path><circle cx="7.5" cy="17.5" r="2.5"></circle><circle cx="16.5" cy="17.5" r="2.5"></circle>',
+        'interest': '<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>',
+        'payment': '<rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line>',
+        'retirement': '<circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 1 0-16 0"></path>',
+        'investment': '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline>',
+        'currency': '<circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 6v2m0 8v2"></path>',
+        'inflation': '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>',
+        'compound': '<path d="M16 8h4v4"></path><path d="M8 16H4v-4"></path><path d="M20 8c-2 4-6 6-12 8"></path>',
+        'salary': '<rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>',
+        'tax': '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line>',
+        'savings': '<path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2h0V5z"></path><path d="M2 9v1c0 1.1.9 2 2 2h1"></path><path d="M16 11h0"></path>',
+        'rent': '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="M10 22V12h4v10"></path>',
+        'roi': '<line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>',
+        'tip': '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>',
+        'discount': '<path d="M19 9l-7 7-7-7"></path><path d="M5 15l7-7 7 7"></path>', // Using generic, simplified for UI
+        'margin': '<line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line>',
+        'commission': '<circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 6v2m0 8v2"></path>',
+        
+        // Health
+        'bmi': '<path d="M6 4h12v16H6z"></path><line x1="6" y1="12" x2="18" y2="12"></line>', // Scale simplified
+        'calorie': '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>',
+        'bodyfat': '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="18" y1="8" x2="23" y2="13"></line><line x1="23" y1="8" x2="18" y2="13"></line>',
+        'bmr': '<path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line>',
+        'idealweight': '<circle cx="12" cy="5" r="3"></circle><path d="M12 22V8M5 12H2a10 10 0 0 0 20 0h-3"></path>',
+        'pace': '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>',
+        'pregnancy': '<circle cx="12" cy="7" r="4"></circle><path d="M5.5 21a8.5 8.5 0 0 1 13 0"></path><path d="M12 13v3"></path>', // Simplified generic
+        'heart': '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>',
+        'protein': '<path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>',
+        'fat': '<path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line>',
+        'tdee': '<path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>',
+        'calburn': '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>',
+        'onerep': '<path d="M6.5 6.5L12 12l5.5-5.5"></path><path d="M12 12v9"></path><path d="M4 21h16"></path>', // Dumbbell simplified
+
+        // Math
+        'scientific': '<rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="8" y2="10"></line><line x1="12" y1="10" x2="12" y2="10"></line><line x1="16" y1="10" x2="16" y2="10"></line>',
+        'percentage': '<line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle>',
+        'fraction': '<line x1="4" y1="12" x2="20" y2="12"></line><line x1="8" y1="8" x2="8" y2="4"></line><line x1="16" y1="20" x2="16" y2="16"></line>',
+        'stddev': '<path d="M3 3v18h18"></path><path d="M18.7 8l-6.5 5.5-4-2.5L5 14"></path>',
+        'random': '<rect x="2" y="2" width="20" height="20" rx="5"></rect><circle cx="8" cy="8" r="1.5"></circle><circle cx="16" cy="8" r="1.5"></circle><circle cx="8" cy="16" r="1.5"></circle><circle cx="16" cy="16" r="1.5"></circle>',
+        'exponent': '<path d="M14 4l6 6-6 6"></path><path d="M4 14h12"></path>',
+        'quadratic': '<path d="M4 4v16h16"></path><path d="M4 14c4-8 8 4 12-4"></path>',
+        'log': '<path d="M3 20h18"></path><path d="M3 4v16"></path><path d="M7 4v16"></path><path d="M7 4l4 4"></path>',
+        'area': '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>',
+        'volume': '<path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path>',
+        'triangle': '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>',
+        'pythagoras': '<path d="M3 21h18"></path><path d="M3 21V3"></path><path d="M3 21l18-18"></path>',
+        'average': '<line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line>',
+        'gcd': '<circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path>',
+        'basic': '<rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="8" y2="10.01"></line><line x1="12" y1="10" x2="12" y2="10.01"></line><line x1="16" y1="10" x2="16" y2="10.01"></line>',
+
+        // Other
+        'age': '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>',
+        'date': '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line>',
+        'time': '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>',
+        'hours': '<path d="M5 4h4l2 5-2 5H5l2-5-2-5z"></path><path d="M15 4h4l2 5-2 5h-4l2-5-2-5z"></path>',
+        'gpa': '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><path d="M12 6v7l4 2"></path>',
+        'grade': '<path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path>',
+        'height': '<line x1="12" y1="2" x2="12" y2="22"></line><polyline points="18 16 12 22 6 16"></polyline>',
+        'weight': '<circle cx="12" cy="5" r="3"></circle><path d="M12 22V8"></path><path d="M5 12H2a10 10 0 0 0 20 0h-3"></path>',
+        'concrete': '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>',
+        'password': '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>',
+        'dice': '<rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><circle cx="8" cy="8" r="1.5"></circle><circle cx="16" cy="8" r="1.5"></circle><circle cx="8" cy="16" r="1.5"></circle><circle cx="16" cy="16" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle>',
+        'love': '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>',
+        'fuel': '<path d="M3 22V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v14"></path><path d="M7 2h4v4H7z"></path><path d="M15 12h4l3 3v5a2 2 0 0 1-2 2h-1"></path>',
+        'speed': '<path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path>',
+        'square': '<rect x="3" y="3" width="18" height="18" rx="0" ry="0"></rect>',
+      };
+      return icons[name] || '<circle cx="12" cy="12" r="10"></circle>'; // Default fallback
+    };
+
     // --- DATA: Complete Calculator List ---
-    
-    // Helper functions
     const I = (id, label, ph, def) => ({ id, label, placeholder: ph, type: 'number', default: def });
     const T = (id, label, ph) => ({ id, label, placeholder: ph, type: 'text' });
     const D = (id, label) => ({ id, label, type: 'date' });
 
-    // The Array
     const calculators = [
       // --- FINANCIAL ---
-      { name: "Mortgage Calculator", category: "financial", inputs: [I('p', 'Principal ($)', '350000'), I('r', 'Annual Rate (%)', '5.5'), I('n', 'Years', '30')], formula: (i) => { const r=i.r/100/12; const n=i.n*12; const m=i.p*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1); return `Monthly Payment: $${m.toFixed(2)}`; }},
-      { name: "Loan Calculator", category: "financial", inputs: [I('p', 'Loan Amount ($)', '10000'), I('r', 'Annual Rate (%)', '6'), I('n', 'Months', '36')], formula: (i) => { const r=i.r/100/12; const m=i.p*(r*Math.pow(1+r,i.n))/(Math.pow(1+r,i.n)-1); return `Monthly: $${m.toFixed(2)} | Total: $${(m*i.n).toFixed(2)}`; }},
-      { name: "Auto Loan Calculator", category: "financial", inputs: [I('p', 'Vehicle Price ($)', '30000'), I('d', 'Down Payment ($)', '5000'), I('r', 'Rate (%)', '4.5'), I('n', 'Years', '5')], formula: (i) => { const P=i.p-i.d; const r=i.r/100/12; const n=i.n*12; const m=P*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1); return `Monthly: $${m.toFixed(2)}`; }},
-      { name: "Interest Calculator", category: "financial", inputs: [I('p', 'Principal ($)', '10000'), I('r', 'Rate (%)', '5'), I('t', 'Time (Years)', '5')], formula: (i) => { const int=(i.p*i.r*i.t)/100; return `Simple Interest: $${int.toFixed(2)} | Total: $${(i.p+int).toFixed(2)}`; }},
-      { name: "Payment Calculator", category: "financial", inputs: [I('p', 'Amount ($)', '1000'), I('n', 'Months', '12')], formula: (i) => `Monthly Payment: $${(i.p/i.n).toFixed(2)}` },
-      { name: "Retirement Calculator", category: "financial", inputs: [I('age', 'Current Age', '30'), I('sav', 'Current Savings ($)', '50000'), I('mon', 'Monthly Contribution ($)', '500'), I('r', 'Annual Return (%)', '7')], formula: (i) => { const years=65-i.age; const r=i.r/100/12; const n=years*12; const fv=i.sav*Math.pow(1+r,n)+i.mon*((Math.pow(1+r,n)-1)/r); return `At 65: $${fv.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`; }},
-      { name: "Investment Calculator", category: "financial", inputs: [I('p', 'Initial ($)', '10000'), I('mon', 'Monthly Add ($)', '200'), I('r', 'Annual Return (%)', '8'), I('n', 'Years', '10')], formula: (i) => { const r=i.r/100/12; const n=i.n*12; const fv=i.p*Math.pow(1+r,n)+i.mon*((Math.pow(1+r,n)-1)/r); return `Future Value: $${fv.toFixed(2)}`; }},
-      { name: "Currency Calculator", category: "financial", inputs: [I('amt', 'Amount', '100'), T('from', 'From Currency', 'USD'), T('to', 'To Currency', 'EUR'), I('rate', 'Exchange Rate', '0.92')], formula: (i) => `${i.amt} ${i.from} = ${(i.amt * i.rate).toFixed(2)} ${i.to}` },
-      { name: "Inflation Calculator", category: "financial", inputs: [I('amt', 'Amount ($)', '100'), I('r', 'Inflation Rate (%)', '3'), I('n', 'Years', '10')], formula: (i) => `Future Value Needed: $${(i.amt * Math.pow(1 + i.r/100, i.n)).toFixed(2)}` },
-      { name: "Compound Interest Calculator", category: "financial", inputs: [I('p', 'Principal ($)', '5000'), I('r', 'Rate (%)', '5'), I('n', 'Compounds/Year', '12'), I('t', 'Years', '10')], formula: (i) => `Total: $${(i.p * Math.pow(1 + i.r/(100*i.n), i.n*i.t)).toFixed(2)}` },
-      { name: "Salary Calculator", category: "financial", inputs: [I('sal', 'Annual Salary ($)', '60000'), I('hrs', 'Hours/Week', '40')], formula: (i) => `Hourly: $${(i.sal/(i.hrs*52)).toFixed(2)} | Monthly: $${(i.sal/12).toFixed(2)}` },
-      { name: "Sales Tax Calculator", category: "financial", inputs: [I('p', 'Price ($)', '100'), I('r', 'Tax Rate (%)', '8')], formula: (i) => `Total: $${(i.p * (1 + i.r/100)).toFixed(2)}` },
-      { name: "Savings Calculator", category: "financial", inputs: [I('init', 'Initial ($)', '1000'), I('mon', 'Monthly ($)', '200'), I('r', 'Interest (%)', '4'), I('n', 'Years', '5')], formula: (i) => { const r=i.r/100/12; const n=i.n*12; const fv=i.init*Math.pow(1+r,n)+i.mon*((Math.pow(1+r,n)-1)/r); return `Total Savings: $${fv.toFixed(2)}`; }},
-      { name: "Rent Calculator", category: "financial", inputs: [I('inc', 'Income ($)', '5000')], formula: (i) => `Suggested Max Rent: $${(i.inc * 0.3).toFixed(2)} (30% Rule)` },
-      { name: "ROI Calculator", category: "financial", inputs: [I('gain', 'Final Value ($)', '15000'), I('cost', 'Initial Cost ($)', '10000')], formula: (i) => `ROI: ${(((i.gain-i.cost)/i.cost)*100).toFixed(2)}%` },
-      { name: "Tip Calculator", category: "financial", inputs: [I('bill', 'Bill ($)', '50'), I('tip', 'Tip (%)', '15')], formula: (i) => `Tip: $${(i.bill*i.tip/100).toFixed(2)} | Total: $${(i.bill*(1+i.tip/100)).toFixed(2)}` },
-      { name: "Discount Calculator", category: "financial", inputs: [I('p', 'Price ($)', '100'), I('d', 'Discount (%)', '20')], formula: (i) => `Final Price: $${(i.p*(1-i.d/100)).toFixed(2)}` },
-      { name: "Percent Off Calculator", category: "financial", inputs: [I('p', 'Original Price ($)', '100'), I('d', 'Percent Off (%)', '15')], formula: (i) => `Final Price: $${(i.p*(1-i.d/100)).toFixed(2)}` },
-      { name: "Margin Calculator", category: "financial", inputs: [I('cost', 'Cost ($)', '50'), I('sale', 'Sale Price ($)', '100')], formula: (i) => `Profit: $${(i.sale-i.cost).toFixed(2)} | Margin: ${(((i.sale-i.cost)/i.sale)*100).toFixed(2)}%` },
-      { name: "Commission Calculator", category: "financial", inputs: [I('sale', 'Sale Price ($)', '200000'), I('r', 'Commission (%)', '6')], formula: (i) => `Commission: $${(i.sale*i.r/100).toFixed(2)}` },
+      { name: "Mortgage Calculator", icon: "mortgage", category: "financial", inputs: [I('p', 'Principal ($)', '350000'), I('r', 'Annual Rate (%)', '5.5'), I('n', 'Years', '30')], formula: (i) => { const r=i.r/100/12; const n=i.n*12; const m=i.p*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1); return `Monthly Payment: $${m.toFixed(2)}`; }},
+      { name: "Loan Calculator", icon: "loan", category: "financial", inputs: [I('p', 'Loan Amount ($)', '10000'), I('r', 'Annual Rate (%)', '6'), I('n', 'Months', '36')], formula: (i) => { const r=i.r/100/12; const m=i.p*(r*Math.pow(1+r,i.n))/(Math.pow(1+r,i.n)-1); return `Monthly: $${m.toFixed(2)} | Total: $${(m*i.n).toFixed(2)}`; }},
+      { name: "Auto Loan Calculator", icon: "auto", category: "financial", inputs: [I('p', 'Vehicle Price ($)', '30000'), I('d', 'Down Payment ($)', '5000'), I('r', 'Rate (%)', '4.5'), I('n', 'Years', '5')], formula: (i) => { const P=i.p-i.d; const r=i.r/100/12; const n=i.n*12; const m=P*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1); return `Monthly: $${m.toFixed(2)}`; }},
+      { name: "Interest Calculator", icon: "interest", category: "financial", inputs: [I('p', 'Principal ($)', '10000'), I('r', 'Rate (%)', '5'), I('t', 'Time (Years)', '5')], formula: (i) => { const int=(i.p*i.r*i.t)/100; return `Simple Interest: $${int.toFixed(2)} | Total: $${(i.p+int).toFixed(2)}`; }},
+      { name: "Payment Calculator", icon: "payment", category: "financial", inputs: [I('p', 'Amount ($)', '1000'), I('n', 'Months', '12')], formula: (i) => `Monthly Payment: $${(i.p/i.n).toFixed(2)}` },
+      { name: "Retirement Calculator", icon: "retirement", category: "financial", inputs: [I('age', 'Current Age', '30'), I('sav', 'Current Savings ($)', '50000'), I('mon', 'Monthly Contribution ($)', '500'), I('r', 'Annual Return (%)', '7')], formula: (i) => { const years=65-i.age; const r=i.r/100/12; const n=years*12; const fv=i.sav*Math.pow(1+r,n)+i.mon*((Math.pow(1+r,n)-1)/r); return `At 65: $${fv.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`; }},
+      { name: "Investment Calculator", icon: "investment", category: "financial", inputs: [I('p', 'Initial ($)', '10000'), I('mon', 'Monthly Add ($)', '200'), I('r', 'Annual Return (%)', '8'), I('n', 'Years', '10')], formula: (i) => { const r=i.r/100/12; const n=i.n*12; const fv=i.p*Math.pow(1+r,n)+i.mon*((Math.pow(1+r,n)-1)/r); return `Future Value: $${fv.toFixed(2)}`; }},
+      { name: "Currency Calculator", icon: "currency", category: "financial", inputs: [I('amt', 'Amount', '100'), T('from', 'From Currency', 'USD'), T('to', 'To Currency', 'EUR'), I('rate', 'Exchange Rate', '0.92')], formula: (i) => `${i.amt} ${i.from} = ${(i.amt * i.rate).toFixed(2)} ${i.to}` },
+      { name: "Inflation Calculator", icon: "inflation", category: "financial", inputs: [I('amt', 'Amount ($)', '100'), I('r', 'Inflation Rate (%)', '3'), I('n', 'Years', '10')], formula: (i) => `Future Value Needed: $${(i.amt * Math.pow(1 + i.r/100, i.n)).toFixed(2)}` },
+      { name: "Compound Interest Calculator", icon: "compound", category: "financial", inputs: [I('p', 'Principal ($)', '5000'), I('r', 'Rate (%)', '5'), I('n', 'Compounds/Year', '12'), I('t', 'Years', '10')], formula: (i) => `Total: $${(i.p * Math.pow(1 + i.r/(100*i.n), i.n*i.t)).toFixed(2)}` },
+      { name: "Salary Calculator", icon: "salary", category: "financial", inputs: [I('sal', 'Annual Salary ($)', '60000'), I('hrs', 'Hours/Week', '40')], formula: (i) => `Hourly: $${(i.sal/(i.hrs*52)).toFixed(2)} | Monthly: $${(i.sal/12).toFixed(2)}` },
+      { name: "Sales Tax Calculator", icon: "tax", category: "financial", inputs: [I('p', 'Price ($)', '100'), I('r', 'Tax Rate (%)', '8')], formula: (i) => `Total: $${(i.p * (1 + i.r/100)).toFixed(2)}` },
+      { name: "Savings Calculator", icon: "savings", category: "financial", inputs: [I('init', 'Initial ($)', '1000'), I('mon', 'Monthly ($)', '200'), I('r', 'Interest (%)', '4'), I('n', 'Years', '5')], formula: (i) => { const r=i.r/100/12; const n=i.n*12; const fv=i.init*Math.pow(1+r,n)+i.mon*((Math.pow(1+r,n)-1)/r); return `Total Savings: $${fv.toFixed(2)}`; }},
+      { name: "Rent Calculator", icon: "rent", category: "financial", inputs: [I('inc', 'Income ($)', '5000')], formula: (i) => `Suggested Max Rent: $${(i.inc * 0.3).toFixed(2)} (30% Rule)` },
+      { name: "ROI Calculator", icon: "roi", category: "financial", inputs: [I('gain', 'Final Value ($)', '15000'), I('cost', 'Initial Cost ($)', '10000')], formula: (i) => `ROI: ${(((i.gain-i.cost)/i.cost)*100).toFixed(2)}%` },
+      { name: "Tip Calculator", icon: "tip", category: "financial", inputs: [I('bill', 'Bill ($)', '50'), I('tip', 'Tip (%)', '15')], formula: (i) => `Tip: $${(i.bill*i.tip/100).toFixed(2)} | Total: $${(i.bill*(1+i.tip/100)).toFixed(2)}` },
+      { name: "Discount Calculator", icon: "discount", category: "financial", inputs: [I('p', 'Price ($)', '100'), I('d', 'Discount (%)', '20')], formula: (i) => `Final Price: $${(i.p*(1-i.d/100)).toFixed(2)}` },
+      { name: "Percent Off Calculator", icon: "percentage", category: "financial", inputs: [I('p', 'Original Price ($)', '100'), I('d', 'Percent Off (%)', '15')], formula: (i) => `Final Price: $${(i.p*(1-i.d/100)).toFixed(2)}` },
+      { name: "Margin Calculator", icon: "margin", category: "financial", inputs: [I('cost', 'Cost ($)', '50'), I('sale', 'Sale Price ($)', '100')], formula: (i) => `Profit: $${(i.sale-i.cost).toFixed(2)} | Margin: ${(((i.sale-i.cost)/i.sale)*100).toFixed(2)}%` },
+      { name: "Commission Calculator", icon: "commission", category: "financial", inputs: [I('sale', 'Sale Price ($)', '200000'), I('r', 'Commission (%)', '6')], formula: (i) => `Commission: $${(i.sale*i.r/100).toFixed(2)}` },
 
       // --- FITNESS & HEALTH ---
-      { name: "BMI Calculator", category: "health", inputs: [I('w', 'Weight (kg)', '70'), I('h', 'Height (cm)', '175')], formula: (i) => { const bmi=i.w/Math.pow(i.h/100, 2); return `BMI: ${bmi.toFixed(1)} (${bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese'})`; }},
-      { name: "Calorie Calculator", category: "health", inputs: [I('age', 'Age', '30'), T('sex', 'Sex (m/f)', 'm'), I('w', 'Weight (kg)', '70'), I('h', 'Height (cm)', '175')], formula: (i) => { const bmr=i.sex==='m'?10*i.w+6.25*i.h-5*i.age+5:10*i.w+6.25*i.h-5*i.age-161; return `Daily Calories: ${bmr.toFixed(0)} kcal (Sedentary)`; }},
-      { name: "Body Fat Calculator", category: "health", inputs: [I('w', 'Weight (kg)', '80'), I('h', 'Height (cm)', '180'), I('neck', 'Neck (cm)', '38'), I('waist', 'Waist (cm)', '90')], formula: (i) => { const bf=495/(1.0324-0.19077*Math.log10(i.waist-i.neck)+0.15456*Math.log10(i.h))-450; return `Body Fat: ${bf.toFixed(1)}% (US Navy Method)`; }},
-      { name: "BMR Calculator", category: "health", inputs: [I('age', 'Age', '25'), T('sex', 'Sex (m/f)', 'm'), I('w', 'Weight (kg)', '70'), I('h', 'Height (cm)', '175')], formula: (i) => { const bmr=i.sex==='m'?10*i.w+6.25*i.h-5*i.age+5:10*i.w+6.25*i.h-5*i.age-161; return `BMR: ${bmr.toFixed(0)} kcal`; }},
-      { name: "Ideal Weight Calculator", category: "health", inputs: [I('h', 'Height (cm)', '175')], formula: (i) => `Ideal Weight (Devine): ${(50+0.9*(i.h-152)).toFixed(1)} kg` },
-      { name: "Pace Calculator", category: "health", inputs: [I('d', 'Distance (km)', '10'), I('t', 'Time (min)', '50')], formula: (i) => `Pace: ${(i.t/i.d).toFixed(2)} min/km` },
-      { name: "Pregnancy Calculator", category: "health", inputs: [D('lmp', 'Last Period Date')], formula: (i) => { const d=new Date(i.lmp); d.setDate(d.getDate()+280); return `Due Date: ${d.toDateString()}`; }},
-      { name: "Target Heart Rate Calculator", category: "health", inputs: [I('age', 'Age', '30')], formula: (i) => `Target Zone (50-85%): ${(220-i.age)*0.5} - ${(220-i.age)*0.85} bpm` },
-      { name: "Protein Calculator", category: "health", inputs: [I('w', 'Weight (kg)', '70'), I('act', 'Activity Level (1-3)', '2')], formula: (i) => `Daily Protein: ${(i.w*(0.8+i.act*0.2)).toFixed(0)} grams` },
-      { name: "Fat Intake Calculator", category: "health", inputs: [I('cal', 'Calories', '2000')], formula: (i) => `Recommended Fat: ${((i.cal*0.3)/9).toFixed(0)}g (30% of diet)` },
-      { name: "TDEE Calculator", category: "health", inputs: [I('bmr', 'BMR', '1600'), I('act', 'Activity (1.2-1.9)', '1.55')], formula: (i) => `Total Daily Expenditure: ${(i.bmr*i.act).toFixed(0)} kcal` },
-      { name: "Calories Burned Calculator", category: "health", inputs: [I('act', 'Activity (MET)', '8'), I('w', 'Weight (kg)', '70'), I('t', 'Minutes', '30')], formula: (i) => `Calories Burned: ${((i.act*i.w*i.t)/60).toFixed(0)} kcal` },
-      { name: "One Rep Max Calculator", category: "health", inputs: [I('w', 'Weight Lifted (kg)', '80'), I('r', 'Reps Completed', '5')], formula: (i) => `Estimated 1RM: ${(i.w*(1+i.r/30)).toFixed(1)} kg` },
+      { name: "BMI Calculator", icon: "bmi", category: "health", inputs: [I('w', 'Weight (kg)', '70'), I('h', 'Height (cm)', '175')], formula: (i) => { const bmi=i.w/Math.pow(i.h/100, 2); return `BMI: ${bmi.toFixed(1)} (${bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese'})`; }},
+      { name: "Calorie Calculator", icon: "calorie", category: "health", inputs: [I('age', 'Age', '30'), T('sex', 'Sex (m/f)', 'm'), I('w', 'Weight (kg)', '70'), I('h', 'Height (cm)', '175')], formula: (i) => { const bmr=i.sex==='m'?10*i.w+6.25*i.h-5*i.age+5:10*i.w+6.25*i.h-5*i.age-161; return `Daily Calories: ${bmr.toFixed(0)} kcal (Sedentary)`; }},
+      { name: "Body Fat Calculator", icon: "bodyfat", category: "health", inputs: [I('w', 'Weight (kg)', '80'), I('h', 'Height (cm)', '180'), I('neck', 'Neck (cm)', '38'), I('waist', 'Waist (cm)', '90')], formula: (i) => { const bf=495/(1.0324-0.19077*Math.log10(i.waist-i.neck)+0.15456*Math.log10(i.h))-450; return `Body Fat: ${bf.toFixed(1)}% (US Navy Method)`; }},
+      { name: "BMR Calculator", icon: "bmr", category: "health", inputs: [I('age', 'Age', '25'), T('sex', 'Sex (m/f)', 'm'), I('w', 'Weight (kg)', '70'), I('h', 'Height (cm)', '175')], formula: (i) => { const bmr=i.sex==='m'?10*i.w+6.25*i.h-5*i.age+5:10*i.w+6.25*i.h-5*i.age-161; return `BMR: ${bmr.toFixed(0)} kcal`; }},
+      { name: "Ideal Weight Calculator", icon: "idealweight", category: "health", inputs: [I('h', 'Height (cm)', '175')], formula: (i) => `Ideal Weight (Devine): ${(50+0.9*(i.h-152)).toFixed(1)} kg` },
+      { name: "Pace Calculator", icon: "pace", category: "health", inputs: [I('d', 'Distance (km)', '10'), I('t', 'Time (min)', '50')], formula: (i) => `Pace: ${(i.t/i.d).toFixed(2)} min/km` },
+      { name: "Pregnancy Calculator", icon: "pregnancy", category: "health", inputs: [D('lmp', 'Last Period Date')], formula: (i) => { const d=new Date(i.lmp); d.setDate(d.getDate()+280); return `Due Date: ${d.toDateString()}`; }},
+      { name: "Target Heart Rate Calculator", icon: "heart", category: "health", inputs: [I('age', 'Age', '30')], formula: (i) => `Target Zone (50-85%): ${(220-i.age)*0.5} - ${(220-i.age)*0.85} bpm` },
+      { name: "Protein Calculator", icon: "protein", category: "health", inputs: [I('w', 'Weight (kg)', '70'), I('act', 'Activity Level (1-3)', '2')], formula: (i) => `Daily Protein: ${(i.w*(0.8+i.act*0.2)).toFixed(0)} grams` },
+      { name: "Fat Intake Calculator", icon: "fat", category: "health", inputs: [I('cal', 'Calories', '2000')], formula: (i) => `Recommended Fat: ${((i.cal*0.3)/9).toFixed(0)}g (30% of diet)` },
+      { name: "TDEE Calculator", icon: "tdee", category: "health", inputs: [I('bmr', 'BMR', '1600'), I('act', 'Activity (1.2-1.9)', '1.55')], formula: (i) => `Total Daily Expenditure: ${(i.bmr*i.act).toFixed(0)} kcal` },
+      { name: "Calories Burned Calculator", icon: "calburn", category: "health", inputs: [I('act', 'Activity (MET)', '8'), I('w', 'Weight (kg)', '70'), I('t', 'Minutes', '30')], formula: (i) => `Calories Burned: ${((i.act*i.w*i.t)/60).toFixed(0)} kcal` },
+      { name: "One Rep Max Calculator", icon: "onerep", category: "health", inputs: [I('w', 'Weight Lifted (kg)', '80'), I('r', 'Reps Completed', '5')], formula: (i) => `Estimated 1RM: ${(i.w*(1+i.r/30)).toFixed(1)} kg` },
 
       // --- MATH ---
-      { name: "Scientific Calculator", category: "math", inputs: [T('exp', 'Expression (e.g. 2+2, Math.PI)', '2+2')], formula: (i) => { try{ return eval(i.exp) } catch(e){ return 'Syntax Error' } }},
-      { name: "Percentage Calculator", category: "math", inputs: [I('p', 'Percentage (%)', '20'), I('v', 'Value', '500')], formula: (i) => `Result: ${(i.p/100*i.v).toFixed(2)}` },
-      { name: "Fraction Calculator", category: "math", inputs: [I('n1', 'Numerator 1', '1'), I('d1', 'Denominator 1', '2'), T('op', 'Operation (+, -, *, /)', '+'), I('n2', 'Numerator 2', '1'), I('d2', 'Denominator 2', '4')], formula: (i) => { const v1=i.n1/i.d1; const v2=i.n2/i.d2; const res= i.op==='+'?v1+v2:i.op==='-'?v1-v2:i.op==='*'?v1*v2:v1/v2; return `Decimal Result: ${res.toFixed(4)}`; }},
-      { name: "Standard Deviation Calculator", category: "math", inputs: [T('nums', 'Numbers (comma sep)', '1, 2, 3, 4, 5')], formula: (i) => { const arr=i.nums.split(',').map(Number); const mean=arr.reduce((a,b)=>a+b,0)/arr.length; const sqD=arr.map(x=>Math.pow(x-mean,2)); const avg= sqD.reduce((a,b)=>a+b,0)/arr.length; return `Std Dev: ${Math.sqrt(avg).toFixed(4)}`; }},
-      { name: "Random Number Generator", category: "math", inputs: [I('min', 'Min', '1'), I('max', 'Max', '100')], formula: (i) => `Random: ${Math.floor(Math.random()*(i.max-i.min+1))+i.min}` },
-      { name: "Exponent Calculator", category: "math", inputs: [I('b', 'Base', '2'), I('e', 'Exponent', '8')], formula: (i) => `Result: ${Math.pow(i.b, i.e)}` },
-      { name: "Quadratic Formula Calculator", category: "math", inputs: [I('a', 'A', '1'), I('b', 'B', '-5'), I('c', 'C', '6')], formula: (i) => `Roots: ${((-i.b+Math.sqrt(i.b*i.b-4*i.a*i.c))/(2*i.a)).toFixed(2)}, ${((-i.b-Math.sqrt(i.b*i.b-4*i.a*i.c))/(2*i.a)).toFixed(2)}` },
-      { name: "Log Calculator", category: "math", inputs: [I('n', 'Number', '100'), I('b', 'Base', '10')], formula: (i) => `Log: ${(Math.log(i.n)/Math.log(i.b)).toFixed(4)}` },
-      { name: "Area Calculator", category: "math", inputs: [T('s', 'Shape (circle, square, rectangle)', 'circle'), I('r', 'Radius/Length', '5'), I('h', 'Height/Width (if rect)', '10')], formula: (i) => { let a=0; if(i.s==='circle') a=Math.PI*i.r*i.r; else if(i.s==='square') a=i.r*i.r; else if(i.s==='rectangle') a=i.r*i.h; return `Area: ${a.toFixed(2)}`; }},
-      { name: "Volume Calculator", category: "math", inputs: [T('shape', 'Shape (sphere, cube, cylinder)', 'sphere'), I('r', 'Radius/Side', '5'), I('h', 'Height (if cylinder)', '10')], formula: (i) => { let vol=0; if(i.shape==='sphere') vol=4/3*Math.PI*Math.pow(i.r,3); else if(i.shape==='cube') vol=Math.pow(i.r,3); else if(i.shape==='cylinder') vol=Math.PI*Math.pow(i.r,2)*i.h; return `Volume: ${vol.toFixed(2)} cubic units`; }},
-      { name: "Triangle Calculator", category: "math", inputs: [I('a', 'Side A', '3'), I('b', 'Side B', '4'), I('c', 'Side C', '5')], formula: (i) => { const s=(i.a+i.b+i.c)/2; const area=Math.sqrt(s*(s-i.a)*(s-i.b)*(s-i.c)); return `Area: ${area.toFixed(2)} | Perimeter: ${i.a+i.b+i.c}`; }},
-      { name: "Pythagorean Theorem Calculator", category: "math", inputs: [I('a', 'Side A', '3'), I('b', 'Side B', '4')], formula: (i) => `Hypotenuse (c): ${Math.sqrt(i.a*i.a + i.b*i.b).toFixed(2)}` },
-      { name: "Average Calculator", category: "math", inputs: [T('nums', 'Numbers', '10, 20, 30')], formula: (i) => { const arr=i.nums.split(',').map(Number); return `Average: ${(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2)}`; }},
-      { name: "GCD & LCM Calculator", category: "math", inputs: [I('a', 'Number 1', '12'), I('b', 'Number 2', '18')], formula: (i) => { const gcd=(a,b)=>b?gcd(b,a%b):a; const lcm=(a,b)=>(a*b)/gcd(a,b); return `GCD: ${gcd(i.a,i.b)} | LCM: ${lcm(i.a,i.b)}`; }},
-      { name: "Basic Calculator", category: "math", inputs: [I('a', 'A', '10'), I('b', 'B', '5'), T('op', 'Op', '+')], formula: (i) => `Result: ${i.op==='+'?i.a+i.b:i.op==='-'?i.a-i.b:i.op==='*'?i.a*i.b:i.a/i.b}` },
+      { name: "Scientific Calculator", icon: "scientific", category: "math", inputs: [T('exp', 'Expression (e.g. 2+2, Math.PI)', '2+2')], formula: (i) => { try{ return eval(i.exp) } catch(e){ return 'Syntax Error' } }},
+      { name: "Percentage Calculator", icon: "percentage", category: "math", inputs: [I('p', 'Percentage (%)', '20'), I('v', 'Value', '500')], formula: (i) => `Result: ${(i.p/100*i.v).toFixed(2)}` },
+      { name: "Fraction Calculator", icon: "fraction", category: "math", inputs: [I('n1', 'Numerator 1', '1'), I('d1', 'Denominator 1', '2'), T('op', 'Operation (+, -, *, /)', '+'), I('n2', 'Numerator 2', '1'), I('d2', 'Denominator 2', '4')], formula: (i) => { const v1=i.n1/i.d1; const v2=i.n2/i.d2; const res= i.op==='+'?v1+v2:i.op==='-'?v1-v2:i.op==='*'?v1*v2:v1/v2; return `Decimal Result: ${res.toFixed(4)}`; }},
+      { name: "Standard Deviation Calculator", icon: "stddev", category: "math", inputs: [T('nums', 'Numbers (comma sep)', '1, 2, 3, 4, 5')], formula: (i) => { const arr=i.nums.split(',').map(Number); const mean=arr.reduce((a,b)=>a+b,0)/arr.length; const sqD=arr.map(x=>Math.pow(x-mean,2)); const avg= sqD.reduce((a,b)=>a+b,0)/arr.length; return `Std Dev: ${Math.sqrt(avg).toFixed(4)}`; }},
+      { name: "Random Number Generator", icon: "random", category: "math", inputs: [I('min', 'Min', '1'), I('max', 'Max', '100')], formula: (i) => `Random: ${Math.floor(Math.random()*(i.max-i.min+1))+i.min}` },
+      { name: "Exponent Calculator", icon: "exponent", category: "math", inputs: [I('b', 'Base', '2'), I('e', 'Exponent', '8')], formula: (i) => `Result: ${Math.pow(i.b, i.e)}` },
+      { name: "Quadratic Formula Calculator", icon: "quadratic", category: "math", inputs: [I('a', 'A', '1'), I('b', 'B', '-5'), I('c', 'C', '6')], formula: (i) => `Roots: ${((-i.b+Math.sqrt(i.b*i.b-4*i.a*i.c))/(2*i.a)).toFixed(2)}, ${((-i.b-Math.sqrt(i.b*i.b-4*i.a*i.c))/(2*i.a)).toFixed(2)}` },
+      { name: "Log Calculator", icon: "log", category: "math", inputs: [I('n', 'Number', '100'), I('b', 'Base', '10')], formula: (i) => `Log: ${(Math.log(i.n)/Math.log(i.b)).toFixed(4)}` },
+      { name: "Area Calculator", icon: "area", category: "math", inputs: [T('s', 'Shape (circle, square, rectangle)', 'circle'), I('r', 'Radius/Length', '5'), I('h', 'Height/Width (if rect)', '10')], formula: (i) => { let a=0; if(i.s==='circle') a=Math.PI*i.r*i.r; else if(i.s==='square') a=i.r*i.r; else if(i.s==='rectangle') a=i.r*i.h; return `Area: ${a.toFixed(2)}`; }},
+      { name: "Volume Calculator", icon: "volume", category: "math", inputs: [T('shape', 'Shape (sphere, cube, cylinder)', 'sphere'), I('r', 'Radius/Side', '5'), I('h', 'Height (if cylinder)', '10')], formula: (i) => { let vol=0; if(i.shape==='sphere') vol=4/3*Math.PI*Math.pow(i.r,3); else if(i.shape==='cube') vol=Math.pow(i.r,3); else if(i.shape==='cylinder') vol=Math.PI*Math.pow(i.r,2)*i.h; return `Volume: ${vol.toFixed(2)} cubic units`; }},
+      { name: "Triangle Calculator", icon: "triangle", category: "math", inputs: [I('a', 'Side A', '3'), I('b', 'Side B', '4'), I('c', 'Side C', '5')], formula: (i) => { const s=(i.a+i.b+i.c)/2; const area=Math.sqrt(s*(s-i.a)*(s-i.b)*(s-i.c)); return `Area: ${area.toFixed(2)} | Perimeter: ${i.a+i.b+i.c}`; }},
+      { name: "Pythagorean Theorem Calculator", icon: "pythagoras", category: "math", inputs: [I('a', 'Side A', '3'), I('b', 'Side B', '4')], formula: (i) => `Hypotenuse (c): ${Math.sqrt(i.a*i.a + i.b*i.b).toFixed(2)}` },
+      { name: "Average Calculator", icon: "average", category: "math", inputs: [T('nums', 'Numbers', '10, 20, 30')], formula: (i) => { const arr=i.nums.split(',').map(Number); return `Average: ${(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2)}`; }},
+      { name: "GCD & LCM Calculator", icon: "gcd", category: "math", inputs: [I('a', 'Number 1', '12'), I('b', 'Number 2', '18')], formula: (i) => { const gcd=(a,b)=>b?gcd(b,a%b):a; const lcm=(a,b)=>(a*b)/gcd(a,b); return `GCD: ${gcd(i.a,i.b)} | LCM: ${lcm(i.a,i.b)}`; }},
+      { name: "Basic Calculator", icon: "basic", category: "math", inputs: [I('a', 'A', '10'), I('b', 'B', '5'), T('op', 'Op', '+')], formula: (i) => `Result: ${i.op==='+'?i.a+i.b:i.op==='-'?i.a-i.b:i.op==='*'?i.a*i.b:i.a/i.b}` },
 
       // --- OTHER ---
-      { name: "Age Calculator", category: "other", inputs: [D('dob', 'Date of Birth')], formula: (i) => { const d=new Date(i.dob); const age=Date.now()-d; return `Age: ${Math.floor(age/(365.25*24*3600*1000))} Years`; }},
-      { name: "Date Calculator", category: "other", inputs: [D('d1', 'Start Date'), D('d2', 'End Date')], formula: (i) => { const diff=Math.abs(new Date(i.d2)-new Date(i.d1)); return `Difference: ${Math.ceil(diff/(1000*60*60*24))} Days`; }},
-      { name: "Time Calculator", category: "other", inputs: [T('t1', 'Time 1 (HH:MM)', '10:30'), T('op', 'Op (+,-)', '+'), T('t2', 'Time 2 (HH:MM)', '02:15')], formula: (i) => { const m1=parseInt(i.t1.split(':')[0])*60+parseInt(i.t1.split(':')[1]); const m2=parseInt(i.t2.split(':')[0])*60+parseInt(i.t2.split(':')[1]); const r=i.op==='+'?m1+m2:m1-m2; return `Result: ${Math.floor(r/60)%24}:${Math.abs(r%60).toString().padStart(2,'0')}`; }},
-      { name: "Hours Calculator", category: "other", inputs: [T('start', 'Start Time', '09:00'), T('end', 'End Time', '17:30')], formula: (i) => { const s=parseInt(i.start.split(':')[0])*60+parseInt(i.start.split(':')[1]); const e=parseInt(i.end.split(':')[0])*60+parseInt(i.end.split(':')[1]); const h=(e-s)/60; return `Duration: ${Math.floor(h)}h ${(h%1)*60}m`; }},
-      { name: "GPA Calculator", category: "other", inputs: [T('grades', 'Grades (A=4, B=3...)', '4, 3, 3.5, 4')], formula: (i) => { const g=i.grades.split(',').map(Number); return `GPA: ${(g.reduce((a,b)=>a+b,0)/g.length).toFixed(2)}`; }},
-      { name: "Grade Calculator", category: "other", inputs: [I('cur', 'Current Grade', '85'), I('fin', 'Final Exam Weight (%)', '20'), I('des', 'Desired Grade', '90')], formula: (i) => `Need on Final: ${((i.des - i.cur*(1-i.fin/100))/(i.fin/100)).toFixed(1)}%` },
-      { name: "Height Converter", category: "other", inputs: [I('cm', 'Height (cm)', '180')], formula: (i) => `${Math.floor(i.cm/2.54/12)}' ${Math.round((i.cm/2.54)%12)}"` },
-      { name: "Weight Converter", category: "other", inputs: [I('kg', 'Weight (kg)', '70')], formula: (i) => `Pounds: ${(i.kg*2.20462).toFixed(1)} lbs` },
-      { name: "Concrete Calculator", category: "other", inputs: [I('l', 'Length (ft)', '10'), I('w', 'Width (ft)', '10'), I('d', 'Depth (in)', '6')], formula: (i) => `Need ${(i.l*i.w*(i.d/12)/27).toFixed(2)} Cubic Yards` },
-      { name: "Password Generator", category: "other", inputs: [I('len', 'Length', '12'), I('num', 'Include Numbers (1/0)', '1'), I('sym', 'Include Symbols (1/0)', '1')], formula: (i) => { const c='abcdefghijklmnopqrstuvwxyz'+(i.num?'0123456789':'')+(i.sym?'!@#$%^&*':''); let p=''; for(let x=0;x<i.len;x++) p+=c.charAt(Math.floor(Math.random()*c.length)); return `Password: ${p}`; }},
-      { name: "Dice Roller", category: "other", inputs: [I('n', 'Number of Dice', '2'), I('sides', 'Sides', '6')], formula: (i) => `Rolls: ${Array.from({length:i.n}, ()=>Math.ceil(Math.random()*i.sides)).join(', ')}` },
-      { name: "Love Calculator", category: "other", inputs: [T('n1', 'Name 1', 'Romeo'), T('n2', 'Name 2', 'Juliet')], formula: (i) => `Compatibility: ${Math.floor((i.n1.length+i.n2.length)%100)}%` },
-      { name: "Fuel Cost Calculator", category: "other", inputs: [I('dist', 'Distance (miles)', '300'), I('mpg', 'MPG', '25'), I('price', 'Price/Gal ($)', '3.50')], formula: (i) => `Trip Cost: $${((i.dist/i.mpg)*i.price).toFixed(2)}` },
-      { name: "Speed Calculator", category: "other", inputs: [I('d', 'Distance (km)', '100'), I('t', 'Time (h)', '1.5')], formula: (i) => `Speed: ${(i.d/i.t).toFixed(2)} km/h` },
-      { name: "Square Footage Calculator", category: "other", inputs: [I('l', 'Length (ft)', '20'), I('w', 'Width (ft)', '30')], formula: (i) => `Area: ${(i.l*i.w).toFixed(0)} sq ft` },
+      { name: "Age Calculator", icon: "age", category: "other", inputs: [D('dob', 'Date of Birth')], formula: (i) => { const d=new Date(i.dob); const age=Date.now()-d; return `Age: ${Math.floor(age/(365.25*24*3600*1000))} Years`; }},
+      { name: "Date Calculator", icon: "date", category: "other", inputs: [D('d1', 'Start Date'), D('d2', 'End Date')], formula: (i) => { const diff=Math.abs(new Date(i.d2)-new Date(i.d1)); return `Difference: ${Math.ceil(diff/(1000*60*60*24))} Days`; }},
+      { name: "Time Calculator", icon: "time", category: "other", inputs: [T('t1', 'Time 1 (HH:MM)', '10:30'), T('op', 'Op (+,-)', '+'), T('t2', 'Time 2 (HH:MM)', '02:15')], formula: (i) => { const m1=parseInt(i.t1.split(':')[0])*60+parseInt(i.t1.split(':')[1]); const m2=parseInt(i.t2.split(':')[0])*60+parseInt(i.t2.split(':')[1]); const r=i.op==='+'?m1+m2:m1-m2; return `Result: ${Math.floor(r/60)%24}:${Math.abs(r%60).toString().padStart(2,'0')}`; }},
+      { name: "Hours Calculator", icon: "hours", category: "other", inputs: [T('start', 'Start Time', '09:00'), T('end', 'End Time', '17:30')], formula: (i) => { const s=parseInt(i.start.split(':')[0])*60+parseInt(i.start.split(':')[1]); const e=parseInt(i.end.split(':')[0])*60+parseInt(i.end.split(':')[1]); const h=(e-s)/60; return `Duration: ${Math.floor(h)}h ${(h%1)*60}m`; }},
+      { name: "GPA Calculator", icon: "gpa", category: "other", inputs: [T('grades', 'Grades (A=4, B=3...)', '4, 3, 3.5, 4')], formula: (i) => { const g=i.grades.split(',').map(Number); return `GPA: ${(g.reduce((a,b)=>a+b,0)/g.length).toFixed(2)}`; }},
+      { name: "Grade Calculator", icon: "grade", category: "other", inputs: [I('cur', 'Current Grade', '85'), I('fin', 'Final Exam Weight (%)', '20'), I('des', 'Desired Grade', '90')], formula: (i) => `Need on Final: ${((i.des - i.cur*(1-i.fin/100))/(i.fin/100)).toFixed(1)}%` },
+      { name: "Height Converter", icon: "height", category: "other", inputs: [I('cm', 'Height (cm)', '180')], formula: (i) => `${Math.floor(i.cm/2.54/12)}' ${Math.round((i.cm/2.54)%12)}"` },
+      { name: "Weight Converter", icon: "weight", category: "other", inputs: [I('kg', 'Weight (kg)', '70')], formula: (i) => `Pounds: ${(i.kg*2.20462).toFixed(1)} lbs` },
+      { name: "Concrete Calculator", icon: "concrete", category: "other", inputs: [I('l', 'Length (ft)', '10'), I('w', 'Width (ft)', '10'), I('d', 'Depth (in)', '6')], formula: (i) => `Need ${(i.l*i.w*(i.d/12)/27).toFixed(2)} Cubic Yards` },
+      { name: "Password Generator", icon: "password", category: "other", inputs: [I('len', 'Length', '12'), I('num', 'Include Numbers (1/0)', '1'), I('sym', 'Include Symbols (1/0)', '1')], formula: (i) => { const c='abcdefghijklmnopqrstuvwxyz'+(i.num?'0123456789':'')+(i.sym?'!@#$%^&*':''); let p=''; for(let x=0;x<i.len;x++) p+=c.charAt(Math.floor(Math.random()*c.length)); return `Password: ${p}`; }},
+      { name: "Dice Roller", icon: "dice", category: "other", inputs: [I('n', 'Number of Dice', '2'), I('sides', 'Sides', '6')], formula: (i) => `Rolls: ${Array.from({length:i.n}, ()=>Math.ceil(Math.random()*i.sides)).join(', ')}` },
+      { name: "Love Calculator", icon: "love", category: "other", inputs: [T('n1', 'Name 1', 'Romeo'), T('n2', 'Name 2', 'Juliet')], formula: (i) => `Compatibility: ${Math.floor((i.n1.length+i.n2.length)%100)}%` },
+      { name: "Fuel Cost Calculator", icon: "fuel", category: "other", inputs: [I('dist', 'Distance (miles)', '300'), I('mpg', 'MPG', '25'), I('price', 'Price/Gal ($)', '3.50')], formula: (i) => `Trip Cost: $${((i.dist/i.mpg)*i.price).toFixed(2)}` },
+      { name: "Speed Calculator", icon: "speed", category: "other", inputs: [I('d', 'Distance (km)', '100'), I('t', 'Time (h)', '1.5')], formula: (i) => `Speed: ${(i.d/i.t).toFixed(2)} km/h` },
+      { name: "Square Footage Calculator", icon: "square", category: "other", inputs: [I('l', 'Length (ft)', '20'), I('w', 'Width (ft)', '30')], formula: (i) => `Area: ${(i.l*i.w).toFixed(0)} sq ft` },
     ];
-
-    // --- ICON HELPER ---
-    function getIcon(category) {
-      const iconStyle = "width: 100%; height: 100%; stroke: var(--accent); fill: none; stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;";
-      switch(category) {
-        case 'financial':
-          return `<svg viewBox="0 0 24 24" style="${iconStyle}"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`;
-        case 'health':
-          return `<svg viewBox="0 0 24 24" style="${iconStyle}"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
-        case 'math':
-          return `<svg viewBox="0 0 24 24" style="${iconStyle}"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
-        default:
-          return `<svg viewBox="0 0 24 24" style="${iconStyle}"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`;
-      }
-    }
 
     // --- CORE LOGIC ---
 
@@ -398,7 +468,6 @@
         renderAuth();
         initCanvas();
         
-        // Category Clicks
         document.getElementById('catContainer').addEventListener('click', e => {
           if(e.target.classList.contains('category-pill')) {
             document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
@@ -459,7 +528,9 @@
       
       grid.innerHTML = filtered.map(c => `
         <div class="calc-card" onclick="openCalc('${c.name}')">
-          <div class="card-icon">${getIcon(c.category)}</div>
+          <div class="card-icon">
+             <svg viewBox="0 0 24 24">${getToolIcon(c.icon)}</svg>
+          </div>
           <span class="text-[10px] text-[var(--accent)] uppercase tracking-wider relative z-10">${c.category}</span>
           <h3 class="text-sm font-display font-medium text-[var(--fg)] relative z-10 mt-1">${c.name}</h3>
         </div>
