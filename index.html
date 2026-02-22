@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FileForge - Free Online File Tools</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg-elevated: #12121a;
+      --fg: #f0f0f5;
+      --muted: #6b6b80;
+      --accent: #00d4aa;
+      --accent-glow: rgba(0, 212, 170, 0.3);
+      --card: #16161f;
+      --card-hover: #1c1c28;
+      --border: #2a2a3a;
+      --danger: #ff4757;
+      --warning: #ffa502;
+      --info: #3742fa;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    /* Animated Background */
+    .bg-pattern {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .bg-pattern::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 212, 170, 0.15), transparent),
+        radial-gradient(ellipse 60% 40% at 100% 50%, rgba(55, 66, 250, 0.1), transparent),
+        radial-gradient(ellipse 50% 30% at 0% 80%, rgba(0, 212, 170, 0.08), transparent);
+    }
+
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black, transparent);
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .blob-1 {
+      width: 500px;
+      height: 500px;
+      background: rgba(0, 212, 170, 0.12);
+      top: -200px;
+      left: -100px;
+      animation-delay: 0s;
+    }
+
+    .blob-2 {
+      width: 400px;
+      height: 400px;
+      background: rgba(55, 66, 250, 0.1);
+      bottom: -150px;
+      right: -100px;
+      animation-delay: -10s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -30px) scale(1.05); }
+      66% { transform: translate(-20px, 20px) scale(0.95); }
+    }
+
+    /* Tool Cards */
+    .tool-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--accent-glow), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      background: var(--card-hover);
+      box-shadow: 0 20px 40px -20px rgba(0, 212, 170, 0.2);
+    }
+
+    .tool-card:hover::before {
+      opacity: 1;
+    }
+
+    .tool-card:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .tool-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Category Pills */
+    .category-pill {
+      padding: 10px 20px;
+      border-radius: 100px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-weight: 500;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .category-pill:hover {
+      border-color: var(--accent);
+      color: var(--fg);
+    }
+
+    .category-pill.active {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+    }
+
+    /* Search Input */
+    .search-wrapper {
+      position: relative;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 18px 24px 18px 56px;
+      border-radius: 16px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-glow);
+    }
+
+    .search-input::placeholder {
+      color: var(--muted);
+    }
+
+    /* Reveal Animation */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Stats Counter */
+    .stat-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, var(--fg), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--muted);
+    }
+
+    /* Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      .blob, .reveal, .tool-card {
+        animation: none;
+        transition: none;
+      }
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 640px) {
+      .stat-number {
+        font-size: 1.75rem;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- Background -->
+  <div class="bg-pattern">
+    <div class="grid-overlay"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur-xl bg-[rgba(10,10,15,0.8)] border-b border-[var(--border)]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo -->
+        <a href="#" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--accent)] to-emerald-400 flex items-center justify-center transition-transform group-hover:scale-110">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <path d="m10 13-2 2 2 2"/>
+              <path d="m14 17 2-2-2-2"/>
+            </svg>
+          </div>
+          <span class="text-xl font-bold tracking-tight" style="font-family: 'Space Grotesk', sans-serif;">FileForge</span>
+        </a>
+
+        <!-- Desktop Nav -->
+        <nav class="hidden md:flex items-center gap-1">
+          <a href="#" class="px-4 py-2 rounded-lg text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--bg-elevated)] transition-colors">All Tools</a>
+          <a href="#" class="px-4 py-2 rounded-lg text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--bg-elevated)] transition-colors">API</a>
+          <a href="#" class="px-4 py-2 rounded-lg text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--bg-elevated)] transition-colors">Pricing</a>
+        </nav>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-3">
+          <button class="hidden sm:flex px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--muted)] hover:text-[var(--fg)] hover:border-[var(--accent)] transition-colors">
+            Sign In
+          </button>
+          <button class="px-5 py-2.5 rounded-lg bg-[var(--accent)] text-[var(--bg)] font-semibold hover:brightness-110 transition-all">
+            Get Started
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="pt-16 pb-8 sm:pt-24 sm:pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center reveal">
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+          Transform Your Files<br>
+          <span class="text-[var(--accent)]">Instantly</span>
+        </h1>
+        <p class="text-lg sm:text-xl text-[var(--muted)] max-w-2xl mx-auto mb-10">
+          Free online tools to convert, edit, and optimize your documents, images, and videos. No registration required.
+        </p>
+
+        <!-- Search -->
+        <div class="search-wrapper reveal" style="transition-delay: 100ms;">
+          <svg class="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--muted)]" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.3-4.3"/>
+          </svg>
+          <input 
+            type="text" 
+            class="search-input" 
+            placeholder="Search tools... (e.g., PDF to Word, Image Compress)"
+            id="searchInput"
+            aria-label="Search tools"
+          >
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-8 mt-16 reveal" style="transition-delay: 200ms;">
+        <div class="text-center p-4">
+          <div class="stat-number" data-count="150">0</div>
+          <div class="text-[var(--muted)] text-sm mt-1">Free Tools</div>
+        </div>
+        <div class="text-center p-4">
+          <div class="stat-number" data-count="50">0</div>
+          <div class="text-[var(--muted)] text-sm mt-1">M+ Files Processed</div>
+        </div>
+        <div class="text-center p-4">
+          <div class="stat-number" data-count="99">0</div>
+          <div class="text-[var(--muted)] text-sm mt-1">% Uptime</div>
+        </div>
+        <div class="text-center p-4">
+          <div class="stat-number" data-count="0">0</div>
+          <div class="text-[var(--muted)] text-sm mt-1">Cost to Use</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex gap-3 overflow-x-auto pb-4 scrollbar-hide reveal" id="categoriesContainer" style="transition-delay: 300ms;">
+        <button class="category-pill active" data-category="all">All Tools</button>
+        <button class="category-pill" data-category="pdf">PDF Tools</button>
+        <button class="category-pill" data-category="image">Image Tools</button>
+        <button class="category-pill" data-category="video">Video Tools</button>
+        <button class="category-pill" data-category="document">Document</button>
+        <button class="category-pill" data-category="audio">Audio</button>
+        <button class="category-pill" data-category="ai">AI Tools</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tools Grid -->
+  <section class="py-8 pb-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="toolsGrid">
+        <!-- Tools will be injected here -->
+      </div>
+
+      <!-- Empty State -->
+      <div class="hidden text-center py-16" id="emptyState">
+        <svg class="mx-auto mb-4 text-[var(--muted)]" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.3-4.3"/>
+          <path d="M8 11h6"/>
+        </svg>
+        <p class="text-[var(--muted)] text-lg">No tools found matching your search</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-[var(--border)] py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div>
+          <h4 class="font-semibold mb-4 text-[var(--fg)]">Product</h4>
+          <ul class="space-y-2 text-[var(--muted)]">
+            <li><a href="#" class="hover:text-[var(--accent)] transition-colors">All Tools</a></li>
+            <li><a href="#" class="hover:text-[var(--accent)] transition-colors">API Access</a></li>
+            <li><a href="#" class="hover:text-[var(--accent)] transition-colors">Desktop App</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-4 text-[var(--fg)]">Popular</h4>
+          <ul class="space-y-2 text-[var(--muted)]">
+            <li><a href="#" class="hover:text-[var(--accent)] transition-colors">PDF to Word</a></li>
+            <li><a href="#" class="hover:text-[var(--accent)] transition-colors">Image Compress</a></li>
+            <li><a href="#" class="hover:text-[var(--accent)] transition-colors">Video Converter</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-4 text-[var(--fg)]">Company</h4>
+          <ul class="space-y-2 text-[var(--muted)]">
+            <li><a href="#" class="hover:text-[var(--accent)] transition-colors">About</a></li>
+            <li><a href="#" class="hover:text-[var(--accent)] transition-colors">Blog</a></li>
+            <li><a href="#" class="hover:text-[var(--accent)] transition-colors">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-4 text-[var(--fg)]">Legal</h4>
+          <ul class="space-y-2 text-[var(--muted)]">
+            <li><a href="#" class="hover:text-[var(--accent)] transition-colors">Privacy Policy</a></li>
+            <li><a href="#" class="hover:text-[var(--accent)] transition-colors">Terms of Service</a></li>
+            <li><a href="#" class="hover:text-[var(--accent)] transition-colors">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-12 pt-8 border-t border-[var(--border)] text-center text-[var(--muted)] text-sm">
+        © 2024 FileForge. All rights reserved. Free file tools for everyone.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Tools Data
+    const tools = [
+      { name: 'PDF to Word', desc: 'Convert PDF documents to editable Word files', category: 'pdf', icon: 'file-text', color: '#ef4444', popular: true },
+      { name: 'PDF to JPG', desc: 'Extract images from PDF or convert pages to JPG', category: 'pdf', icon: 'image', color: '#f97316', popular: true },
+      { name: 'Merge PDF', desc: 'Combine multiple PDF files into one document', category: 'pdf', icon: 'layers', color: '#eab308', popular: true },
+      { name: 'Split PDF', desc: 'Separate PDF pages into individual files', category: 'pdf', icon: 'scissors', color: '#84cc16' },
+      { name: 'Compress PDF', desc: 'Reduce PDF file size while maintaining quality', category: 'pdf', icon: 'minimize-2', color: '#22c55e', popular: true },
+      { name: 'PDF to Excel', desc: 'Convert PDF tables to Excel spreadsheets', category: 'pdf', icon: 'table', color: '#14b8a6' },
+      { name: 'Word to PDF', desc: 'Convert Word documents to PDF format', category: 'pdf', icon: 'file-down', color: '#06b6d4' },
+      { name: 'PDF Editor', desc: 'Edit text, images, and annotations in PDFs', category: 'pdf', icon: 'edit-3', color: '#0ea5e9' },
+      
+      { name: 'Image Compressor', desc: 'Compress images without quality loss', category: 'image', icon: 'minimize-2', color: '#3b82f6', popular: true },
+      { name: 'Image Resizer', desc: 'Resize images to any dimension', category: 'image', icon: 'maximize-2', color: '#6366f1', popular: true },
+      { name: 'PNG to JPG', desc: 'Convert PNG images to JPG format', category: 'image', icon: 'refresh-cw', color: '#8b5cf6' },
+      { name: 'JPG to PNG', desc: 'Convert JPG images to PNG format', category: 'image', icon: 'refresh-cw', color: '#a855f7' },
+      { name: 'Image to PDF', desc: 'Convert images to PDF documents', category: 'image', icon: 'file-plus', color: '#d946ef' },
+      { name: 'Remove Background', desc: 'Remove image backgrounds automatically', category: 'image', icon: 'eraser', color: '#ec4899', popular: true },
+      { name: 'Image Cropper', desc: 'Crop images to custom dimensions', category: 'image', icon: 'crop', color: '#f43f5e' },
+      { name: 'WebP Converter', desc: 'Convert images to and from WebP format', category: 'image', icon: 'image', color: '#f97316' },
+      
+      { name: 'Video Converter', desc: 'Convert videos between any format', category: 'video', icon: 'film', color: '#ef4444', popular: true },
+      { name: 'Video Compressor', desc: 'Reduce video file size significantly', category: 'video', icon: 'minimize-2', color: '#f97316', popular: true },
+      { name: 'Video to MP3', desc: 'Extract audio from video files', category: 'video', icon: 'music', color: '#eab308' },
+      { name: 'Video to GIF', desc: 'Convert video clips to animated GIFs', category: 'video', icon: 'play', color: '#22c55e' },
+      { name: 'Trim Video', desc: 'Cut and trim video clips online', category: 'video', icon: 'scissors', color: '#14b8a6' },
+      { name: 'Video Resizer', desc: 'Resize videos for any platform', category: 'video', icon: 'maximize-2', color: '#3b82f6' },
+      
+      { name: 'Document Scanner', desc: 'Scan documents using your camera', category: 'document', icon: 'scan', color: '#8b5cf6' },
+      { name: 'OCR Text Extract', desc: 'Extract text from images and PDFs', category: 'document', icon: 'file-search', color: '#a855f7', popular: true },
+      { name: 'HTML to PDF', desc: 'Convert web pages to PDF documents', category: 'document', icon: 'code', color: '#d946ef' },
+      { name: 'Ebook Converter', desc: 'Convert ebooks between formats', category: 'document', icon: 'book-open', color: '#ec4899' },
+      
+      { name: 'MP3 Converter', desc: 'Convert audio to MP3 format', category: 'audio', icon: 'music', color: '#f43f5e', popular: true },
+      { name: 'Audio Merger', desc: 'Combine multiple audio files', category: 'audio', icon: 'git-merge', color: '#ef4444' },
+      { name: 'Audio Cutter', desc: 'Trim and cut audio files', category: 'audio', icon: 'scissors', color: '#f97316' },
+      { name: 'Voice Recorder', desc: 'Record audio directly in browser', category: 'audio', icon: 'mic', color: '#eab308' },
+      
+      { name: 'AI Writer', desc: 'Generate content with artificial intelligence', category: 'ai', icon: 'cpu', color: '#3b82f6', popular: true },
+      { name: 'AI Image Generator', desc: 'Create images from text descriptions', category: 'ai', icon: 'wand-2', color: '#6366f1', popular: true },
+      { name: 'AI Upscaler', desc: 'Enhance image resolution with AI', category: 'ai', icon: 'arrow-up-circle', color: '#8b5cf6' },
+      { name: 'AI Background Remover', desc: 'Smart background removal powered by AI', category: 'ai', icon: 'sparkles', color: '#a855f7' },
+    ];
+
+    // Icon SVG paths
+    const icons = {
+      'file-text': '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/>',
+      'image': '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>',
+      'layers': '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+      'scissors': '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/>',
+      'minimize-2': '<polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/>',
+      'table': '<path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/>',
+      'file-down': '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/>',
+      'edit-3': '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>',
+      'maximize-2': '<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>',
+      'refresh-cw': '<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
+      'file-plus': '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>',
+      'eraser': '<path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>',
+      'crop': '<path d="M6.13 1L6 16a2 2 0 0 0 2 2h15"/><path d="M1 6.13L16 6a2 2 0 0 1 2 2v15"/>',
+      'film': '<rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/>',
+      'music': '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+      'play': '<polygon points="5 3 19 12 5 21 5 3"/>',
+      'scan': '<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/>',
+      'file-search': '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><circle cx="10" cy="13" r="2"/><path d="m20 17-1.5-1.5"/>',
+      'code': '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+      'book-open': '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+      'git-merge': '<circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/>',
+      'mic': '<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>',
+      'cpu': '<rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/>',
+      'wand-2': '<path d="m15 4V2"/><path d="m15 16v-2"/><path d="M8 9h2"/><path d="M20 9h2"/><path d="m17.8 11.8 1.4 1.4"/><path d="m15 9h0"/><path d="m17.8 6.2 1.4-1.4"/><path d="m3 21 9-9"/><path d="m12.2 6.2 1.4-1.4"/>',
+      'arrow-up-circle': '<circle cx="12" cy="12" r="10"/><polyline points="16 12 12 8 8 12"/><line x1="12" y1="16" x2="12" y2="8"/>',
+      'sparkles': '<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/>'
+    };
+
+    // Render icon SVG
+    function renderIcon(iconName, color) {
+      return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icons[iconName] || ''}</svg>`;
+    }
+
+    // Render tool cards
+    function renderTools(filteredTools) {
+      const grid = document.getElementById('toolsGrid');
+      const emptyState = document.getElementById('emptyState');
+      
+      if (filteredTools.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      
+      emptyState.classList.add('hidden');
+      grid.innerHTML = filteredTools.map((tool, index) => `
+        <div class="tool-card reveal" style="transition-delay: ${Math.min(index * 50, 400)}ms;" tabindex="0" role="button" aria-label="${tool.name}">
+          <div class="tool-icon" style="background: ${tool.color}22;">
+            ${renderIcon(tool.icon, tool.color)}
+          </div>
+          <h3 class="font-semibold text-lg mb-2 relative z-10 flex items-center gap-2">
+            ${tool.name}
+            ${tool.popular ? '<span class="text-xs px-2 py-0.5 rounded-full bg-[var(--accent)] text-[var(--bg)] font-medium">Popular</span>' : ''}
+          </h3>
+          <p class="text-[var(--muted)] text-sm relative z-10">${tool.desc}</p>
+        </div>
+      `).join('');
+
+      // Trigger reveal animation
+      requestAnimationFrame(() => {
+        document.querySelectorAll('.tool-card.reveal').forEach(el => {
+          el.classList.add('visible');
+        });
+      });
+    }
+
+    // Filter tools
+    let currentCategory = 'all';
+    let searchQuery = '';
+
+    function filterTools() {
+      let filtered = tools;
+      
+      if (currentCategory !== 'all') {
+        filtered = filtered.filter(t => t.category === currentCategory);
+      }
+      
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        filtered = filtered.filter(t => 
+          t.name.toLowerCase().includes(query) || 
+          t.desc.toLowerCase().includes(query)
+        );
+      }
+      
+      renderTools(filtered);
+    }
+
+    // Category buttons
+    document.getElementById('categoriesContainer').addEventListener('click', (e) => {
+      if (e.target.classList.contains('category-pill')) {
+        document.querySelectorAll('.category-pill').forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+        currentCategory = e.target.dataset.category;
+        filterTools();
+      }
+    });
+
+    // Search input
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      filterTools();
+    });
+
+    // Intersection Observer for reveal animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Animate stat counters
+    function animateCounters() {
+      document.querySelectorAll('.stat-number').forEach(counter => {
+        const target = parseInt(counter.dataset.count);
+        const duration = 2000;
+        const start = performance.now();
+        
+        function update(currentTime) {
+          const elapsed = currentTime - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          counter.textContent = Math.floor(target * eased);
+          
+          if (progress < 1) {
+            requestAnimationFrame(update);
+          } else {
+            counter.textContent = target + (target === 0 ? '' : '+');
+          }
+        }
+        
+        requestAnimationFrame(update);
+      });
+    }
+
+    // Initialize
+    renderTools(tools);
+    
+    // Start counter animation when hero is visible
+    const heroObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        animateCounters();
+        heroObserver.disconnect();
+      }
+    }, { threshold: 0.5 });
+    
+    heroObserver.observe(document.querySelector('section'));
+  </script>
+</body>
+</html>
