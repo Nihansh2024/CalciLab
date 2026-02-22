@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CalciLab - Complete Calculator Hub</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="CalciLab: Free online calculators for Finance, Health, Math, and Science. Calculate mortgages, BMI, loans, percentages, and more. Accurate, fast, and easy to use.">
+  <meta name="keywords" content="online calculator, mortgage calculator, BMI calculator, loan calculator, scientific calculator, percentage calculator, financial tools, health tools">
+  <meta name="author" content="CalciLab">
+  <title>CalciLab - Free Online Calculators for Finance, Health & Math</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,7 +18,7 @@
       --bg: #050508;
       --bg-elevated: #0c0c12;
       --fg: #e8e8f0;
-      --muted: #5a5a70;
+      --muted: #6b6b80; /* Slightly lighter for readability */
       --accent: #00ffc8;
       --accent-dim: rgba(0, 255, 200, 0.1);
       --accent-glow: rgba(0, 255, 200, 0.3);
@@ -80,9 +85,7 @@
       border-color: var(--accent);
     }
 
-    .calc-card:hover::before {
-      width: 3px;
-    }
+    .calc-card:hover::before { width: 3px; }
     
     .calc-card:hover .card-icon {
         opacity: 0.2;
@@ -91,27 +94,20 @@
 
     .card-icon {
         position: absolute;
-        right: 0;
-        top: 0;
-        width: 64px;
-        height: 64px;
+        right: 0; top: 0;
+        width: 64px; height: 64px;
         opacity: 0.08;
         transition: all 0.3s ease;
         z-index: 1;
         pointer-events: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: flex; align-items: center; justify-content: center;
     }
     
     .card-icon svg {
-        width: 36px;
-        height: 36px;
+        width: 36px; height: 36px;
         stroke: var(--accent);
-        fill: none;
-        stroke-width: 1.5;
-        stroke-linecap: round;
-        stroke-linejoin: round;
+        fill: none; stroke-width: 1.5;
+        stroke-linecap: round; stroke-linejoin: round;
     }
 
     .category-pill {
@@ -182,21 +178,16 @@
       border-radius: 2px;
     }
 
-    .input-field:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
+    .input-field:focus { outline: none; border-color: var(--accent); }
 
     .btn-primary {
-      width: 100%;
-      padding: 12px;
+      width: 100%; padding: 12px;
       background: var(--accent);
       color: var(--bg);
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      border: none;
-      cursor: pointer;
+      border: none; cursor: pointer;
       transition: all 0.2s;
     }
 
@@ -223,6 +214,61 @@
       font-size: 10px; font-weight: 700; color: var(--accent);
       cursor: pointer;
     }
+
+    /* SEO Article Styles */
+    .seo-section {
+      background: var(--bg-elevated);
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+      padding: 4rem 1rem;
+    }
+    .seo-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .seo-container h2 {
+      font-size: 1.75rem;
+      margin-bottom: 1.5rem;
+      color: var(--fg);
+      border-left: 4px solid var(--accent);
+      padding-left: 1rem;
+    }
+    .seo-container h3 {
+      font-size: 1.25rem;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      color: var(--accent);
+    }
+    .seo-container p {
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .seo-faq-item {
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+      background: var(--card);
+    }
+    .seo-faq-q {
+      padding: 1rem;
+      font-weight: 600;
+      color: var(--fg);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .seo-faq-a {
+      padding: 0 1rem 1rem 1rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      display: none;
+    }
+    .seo-faq-item.active .seo-faq-a { display: block; }
+    .seo-faq-item.active .seo-faq-q svg { transform: rotate(180deg); }
+    .seo-faq-q svg { transition: transform 0.2s; }
   </style>
 </head>
 <body class="min-h-screen">
@@ -244,7 +290,7 @@
   </header>
 
   <!-- Categories Nav -->
-  <nav class="border-b border-[var(--border)] bg-[var(--bg)]">
+  <nav class="border-b border-[var(--border)] bg-[var(--bg)]" aria-label="Calculator Categories">
     <div class="max-w-7xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto scrollbar-hide" id="catContainer">
       <button class="category-pill active" data-category="all">All</button>
       <button class="category-pill" data-category="financial">Financial</button>
@@ -261,6 +307,68 @@
     </div>
     <div id="emptyMsg" class="hidden text-center text-[var(--muted)] py-16">No calculators found.</div>
   </main>
+
+  <!-- SEO Article Section -->
+  <section class="seo-section">
+    <div class="seo-container">
+      <article>
+        <h1 class="text-3xl font-bold mb-6 text-[var(--fg)]">The Ultimate Free Online Calculator Suite</h1>
+        <p class="lead text-lg text-[var(--fg)] opacity-90 mb-8">
+          Welcome to CalciLab, your comprehensive destination for precise, easy-to-use online calculators. Whether you're planning your financial future, tracking fitness goals, or solving complex mathematical problems, our tools are designed to provide instant, accurate results.
+        </p>
+
+        <h2 id="financial-tools">Master Your Finances with Advanced Tools</h2>
+        <p>
+          Financial planning can be complex, but our <strong>Financial Calculator suite</strong> simplifies the numbers. From calculating monthly mortgage payments to understanding the nuances of compound interest, we provide the tools you need to make informed decisions. Use our <a href="#" class="text-[var(--accent)] hover:underline">Mortgage Calculator</a> to estimate home buying costs, or our <a href="#" class="text-[var(--accent)] hover:underline">ROI Calculator</a> to measure the potential return on your investments. Accurate financial forecasting starts here.
+        </p>
+        
+        <h2 id="health-tools">Optimize Your Health and Fitness Journey</h2>
+        <p>
+          Achieving health goals requires data. Our <strong>Health & Fitness Calculators</strong> offer insights into your body's needs. Determine your Body Mass Index (BMI) with our widely-used <a href="#" class="text-[var(--accent)] hover:underline">BMI Calculator</a>, or calculate your daily caloric needs to plan your diet effectively. Whether you are tracking macros or estimating calories burned during a workout, CalciLab provides the metrics for a healthier lifestyle.
+        </p>
+
+        <h2 id="math-tools">Solve Complex Mathematical Problems Instantly</h2>
+        <p>
+          From students to professionals, our <strong>Math Calculators</strong> bridge the gap between problems and solutions. Use our <a href="#" class="text-[var(--accent)] hover:underline">Scientific Calculator</a> for complex equations, or simplify fractions with a single click. We cover everything from basic arithmetic to advanced geometry and statistics, making math accessible to everyone.
+        </p>
+
+        <h2>Frequently Asked Questions (FAQ)</h2>
+        
+        <div class="space-y-4">
+          <div class="seo-faq-item active">
+            <div class="seo-faq-q" onclick="toggleFaq(this)">
+              Is CalciLab free to use?
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="seo-faq-a">
+              Yes, every calculator on CalciLab is 100% free. We believe essential calculation tools should be accessible to everyone without paywalls or subscriptions.
+            </div>
+          </div>
+
+          <div class="seo-faq-item">
+            <div class="seo-faq-q" onclick="toggleFaq(this)">
+              How accurate are the financial calculators?
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="seo-faq-a">
+              Our financial calculators use standard industry formulas for amortization, compound interest, and ROI. While they provide excellent estimates for planning, we recommend consulting with a financial advisor for final decisions involving large sums.
+            </div>
+          </div>
+
+          <div class="seo-faq-item">
+            <div class="seo-faq-q" onclick="toggleFaq(this)">
+              Can I use these calculators on my mobile phone?
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+            <div class="seo-faq-a">
+              Absolutely. CalciLab is built with a responsive design that works seamlessly on desktops, tablets, and smartphones. Calculate on the go, wherever you are.
+            </div>
+          </div>
+        </div>
+
+      </article>
+    </div>
+  </section>
 
   <!-- Auth Modal -->
   <div id="authModal" class="modal-overlay" onclick="if(event.target===this) closeAuth()">
@@ -304,7 +412,6 @@
     // --- ICON LIBRARY ---
     const getToolIcon = (name) => {
       const icons = {
-        // Financial
         'mortgage': '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline>',
         'loan': '<rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M12 9v6"></path><path d="M9 12h6"></path>',
         'auto': '<path d="M5 17h14v-5l-2-4H7l-2 4v5z"></path><circle cx="7.5" cy="17.5" r="2.5"></circle><circle cx="16.5" cy="17.5" r="2.5"></circle>',
@@ -321,26 +428,22 @@
         'rent': '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="M10 22V12h4v10"></path>',
         'roi': '<line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>',
         'tip': '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>',
-        'discount': '<path d="M19 9l-7 7-7-7"></path><path d="M5 15l7-7 7 7"></path>', // Using generic, simplified for UI
+        'discount': '<path d="M19 9l-7 7-7-7"></path><path d="M5 15l7-7 7 7"></path>',
         'margin': '<line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line>',
         'commission': '<circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 6v2m0 8v2"></path>',
-        
-        // Health
-        'bmi': '<path d="M6 4h12v16H6z"></path><line x1="6" y1="12" x2="18" y2="12"></line>', // Scale simplified
+        'bmi': '<path d="M6 4h12v16H6z"></path><line x1="6" y1="12" x2="18" y2="12"></line>',
         'calorie': '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>',
         'bodyfat': '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="18" y1="8" x2="23" y2="13"></line><line x1="23" y1="8" x2="18" y2="13"></line>',
         'bmr': '<path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line>',
         'idealweight': '<circle cx="12" cy="5" r="3"></circle><path d="M12 22V8M5 12H2a10 10 0 0 0 20 0h-3"></path>',
         'pace': '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>',
-        'pregnancy': '<circle cx="12" cy="7" r="4"></circle><path d="M5.5 21a8.5 8.5 0 0 1 13 0"></path><path d="M12 13v3"></path>', // Simplified generic
+        'pregnancy': '<circle cx="12" cy="7" r="4"></circle><path d="M5.5 21a8.5 8.5 0 0 1 13 0"></path><path d="M12 13v3"></path>',
         'heart': '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>',
         'protein': '<path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>',
         'fat': '<path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line>',
         'tdee': '<path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>',
         'calburn': '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>',
-        'onerep': '<path d="M6.5 6.5L12 12l5.5-5.5"></path><path d="M12 12v9"></path><path d="M4 21h16"></path>', // Dumbbell simplified
-
-        // Math
+        'onerep': '<path d="M6.5 6.5L12 12l5.5-5.5"></path><path d="M12 12v9"></path><path d="M4 21h16"></path>',
         'scientific': '<rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="8" y2="10"></line><line x1="12" y1="10" x2="12" y2="10"></line><line x1="16" y1="10" x2="16" y2="10"></line>',
         'percentage': '<line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle>',
         'fraction': '<line x1="4" y1="12" x2="20" y2="12"></line><line x1="8" y1="8" x2="8" y2="4"></line><line x1="16" y1="20" x2="16" y2="16"></line>',
@@ -356,8 +459,6 @@
         'average': '<line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line>',
         'gcd': '<circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path>',
         'basic': '<rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="8" y2="10.01"></line><line x1="12" y1="10" x2="12" y2="10.01"></line><line x1="16" y1="10" x2="16" y2="10.01"></line>',
-
-        // Other
         'age': '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>',
         'date': '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line>',
         'time': '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>',
@@ -374,7 +475,7 @@
         'speed': '<path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path>',
         'square': '<rect x="3" y="3" width="18" height="18" rx="0" ry="0"></rect>',
       };
-      return icons[name] || '<circle cx="12" cy="12" r="10"></circle>'; // Default fallback
+      return icons[name] || '<circle cx="12" cy="12" r="10"></circle>';
     };
 
     // --- DATA: Complete Calculator List ---
@@ -595,6 +696,12 @@
     function toggleMenu() { document.getElementById('userMenu').classList.toggle('hidden'); }
     function signIn(p) { state.user = p === 'google' ? 'GoogleUser' : 'GitHubUser'; closeAuth(); renderAuth(); }
     function signOut() { state.user = null; renderAuth(); }
+
+    // SEO Interaction
+    function toggleFaq(element) {
+      const parent = element.parentElement;
+      parent.classList.toggle('active');
+    }
 
     // Start App
     init();
