@@ -3,101 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CalciLab - Free Online File Tools</title>
+  <title>CalciLab - Scientific File Tools</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0a0a0f;
-      --bg-elevated: #12121a;
-      --fg: #f0f0f5;
-      --muted: #6b6b80;
-      --accent: #00d4aa;
-      --accent-glow: rgba(0, 212, 170, 0.3);
-      --card: #16161f;
-      --card-hover: #1c1c28;
-      --border: #2a2a3a;
-      --success: #22c55e;
-      --warning: #f59e0b;
+      --bg: #050508;
+      --bg-elevated: #0c0c12;
+      --fg: #e8e8f0;
+      --muted: #5a5a70;
+      --accent: #00ffc8;
+      --accent-dim: rgba(0, 255, 200, 0.1);
+      --accent-glow: rgba(0, 255, 200, 0.4);
+      --card: #0f0f16;
+      --border: #1a1a24;
+      --danger: #ff4d6a;
     }
 
     * { box-sizing: border-box; }
 
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'IBM Plex Mono', monospace;
       background: var(--bg);
       color: var(--fg);
       overflow-x: hidden;
     }
 
-    h1, h2, h3, h4, h5, h6 {
+    h1, h2, h3, h4, h5, h6, .font-display {
       font-family: 'Space Grotesk', sans-serif;
     }
 
-    .bg-pattern {
+    /* Canvas Background */
+    #networkCanvas {
       position: fixed;
-      inset: 0;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       z-index: -1;
-      overflow: hidden;
+      opacity: 0.6;
     }
 
-    .bg-pattern::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: 
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 212, 170, 0.15), transparent),
-        radial-gradient(ellipse 60% 40% at 100% 50%, rgba(55, 66, 250, 0.1), transparent);
-    }
-
-    .grid-overlay {
-      position: absolute;
-      inset: 0;
-      background-image: 
-        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-      background-size: 60px 60px;
-      mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black, transparent);
-    }
-
-    .blob {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      animation: float 20s ease-in-out infinite;
-    }
-
-    .blob-1 {
-      width: 500px;
-      height: 500px;
-      background: rgba(0, 212, 170, 0.12);
-      top: -200px;
-      left: -100px;
-    }
-
-    .blob-2 {
-      width: 400px;
-      height: 400px;
-      background: rgba(55, 66, 250, 0.1);
-      bottom: -150px;
-      right: -100px;
-      animation-delay: -10s;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(30px, -30px) scale(1.05); }
+    /* UI Components */
+    .glass-panel {
+      background: rgba(12, 12, 18, 0.8);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
     }
 
     .tool-card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 4px; /* Sharper corners for "Lab" feel */
       padding: 24px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s ease-out;
       cursor: pointer;
       position: relative;
       overflow: hidden;
@@ -106,112 +68,104 @@
     .tool-card::before {
       content: '';
       position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, var(--accent-glow), transparent);
-      opacity: 0;
-      transition: opacity 0.3s;
+      top: 0;
+      left: 0;
+      width: 2px;
+      height: 0;
+      background: var(--accent);
+      transition: height 0.3s ease;
     }
 
     .tool-card:hover {
-      transform: translateY(-4px);
       border-color: var(--accent);
-      background: var(--card-hover);
-      box-shadow: 0 20px 40px -20px rgba(0, 212, 170, 0.2);
+      background: #12121a;
+      transform: translateX(4px);
     }
 
-    .tool-card:hover::before { opacity: 1; }
-    .tool-card:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-
-    .tool-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 16px;
-      position: relative;
-      z-index: 1;
+    .tool-card:hover::before {
+      height: 100%;
     }
 
     .category-pill {
-      padding: 10px 20px;
-      border-radius: 100px;
-      background: var(--bg-elevated);
+      padding: 8px 16px;
+      border-radius: 2px;
+      background: transparent;
       border: 1px solid var(--border);
       color: var(--muted);
-      font-weight: 500;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       transition: all 0.2s;
-      white-space: nowrap;
     }
 
-    .category-pill:hover {
-      border-color: var(--accent);
-      color: var(--fg);
-    }
-
-    .category-pill.active {
+    .category-pill:hover, .category-pill.active {
       background: var(--accent);
       color: var(--bg);
       border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      padding: 12px 24px;
+      background: var(--accent);
+      color: var(--bg);
+      font-weight: 600;
+      border-radius: 2px;
+      border: none;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .btn-secondary {
+      padding: 12px 24px;
+      background: transparent;
+      color: var(--fg);
+      border-radius: 2px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--fg);
     }
 
     .search-input {
       width: 100%;
-      padding: 18px 24px 18px 56px;
-      border-radius: 16px;
+      padding: 16px 20px 16px 50px;
+      border-radius: 2px;
       background: var(--bg-elevated);
       border: 1px solid var(--border);
       color: var(--fg);
-      font-size: 16px;
-      transition: all 0.2s;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
     }
 
     .search-input:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 4px var(--accent-glow);
+      box-shadow: 0 0 0 3px var(--accent-dim);
     }
 
-    .search-input::placeholder { color: var(--muted); }
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .stat-number {
-      font-family: 'Space Grotesk', sans-serif;
-      font-weight: 700;
-      font-size: 2.5rem;
-      background: linear-gradient(135deg, var(--fg), var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    /* Modal Styles */
+    /* Modal System */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px);
       z-index: 100;
       display: flex;
       align-items: center;
       justify-content: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s;
+      transition: opacity 0.2s;
     }
 
     .modal-overlay.active {
@@ -222,392 +176,507 @@
     .modal-content {
       background: var(--bg-elevated);
       border: 1px solid var(--border);
-      border-radius: 24px;
       width: 90%;
-      max-width: 700px;
-      max-height: 90vh;
-      overflow-y: auto;
-      transform: scale(0.9);
+      max-width: 500px;
+      transform: translateY(20px);
       transition: transform 0.3s;
     }
 
     .modal-overlay.active .modal-content {
-      transform: scale(1);
+      transform: translateY(0);
+    }
+
+    /* Auth Buttons */
+    .auth-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      background: transparent;
+      color: var(--fg);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .auth-btn:hover {
+      background: var(--card);
+      border-color: var(--muted);
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      cursor: pointer;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    /* Progress Bar */
+    .progress-track {
+      height: 2px;
+      background: var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      position: absolute;
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.2s;
     }
 
     .upload-zone {
-      border: 2px dashed var(--border);
-      border-radius: 16px;
-      padding: 48px;
+      border: 1px dashed var(--border);
+      padding: 40px;
       text-align: center;
-      transition: all 0.3s;
-      cursor: pointer;
+      transition: all 0.2s;
     }
 
     .upload-zone:hover, .upload-zone.dragover {
       border-color: var(--accent);
-      background: rgba(0, 212, 170, 0.05);
+      background: var(--accent-dim);
     }
 
-    .btn-primary {
-      padding: 12px 24px;
-      background: var(--accent);
-      color: var(--bg);
-      font-weight: 600;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-primary:hover { filter: brightness(1.1); }
-    .btn-primary:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .btn-secondary {
-      padding: 12px 24px;
-      background: transparent;
-      color: var(--fg);
-      font-weight: 500;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-secondary:hover { border-color: var(--muted); }
-
-    .progress-bar {
-      height: 8px;
-      background: var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent), #00ff88);
-      border-radius: 4px;
-      transition: width 0.3s;
-    }
-
-    .input-field {
-      width: 100%;
-      padding: 12px 16px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--fg);
-      font-size: 14px;
-    }
-
-    .input-field:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-
-    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-    @media (prefers-reduced-motion: reduce) {
-      .blob, .reveal, .tool-card, .modal-overlay, .modal-content {
-        animation: none;
-        transition: none;
-      }
-      .reveal { opacity: 1; transform: none; }
-    }
+    ::-webkit-scrollbar-thumb { background: var(--border); }
 
     @media (max-width: 640px) {
-      .stat-number { font-size: 1.75rem; }
-      .modal-content { width: 95%; border-radius: 16px; }
-      .upload-zone { padding: 32px 16px; }
+      .modal-content { width: 95%; }
     }
   </style>
 </head>
 <body class="min-h-screen">
-  <!-- Background -->
-  <div class="bg-pattern">
-    <div class="grid-overlay"></div>
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-  </div>
+  <!-- Network Animation Canvas -->
+  <canvas id="networkCanvas"></canvas>
 
   <!-- Header -->
-  <header class="sticky top-0 z-50 backdrop-blur-xl bg-[rgba(10,10,15,0.8)] border-b border-[var(--border)]">
+  <header class="sticky top-0 z-50 glass-panel border-b border-[var(--border)]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
-        <a href="#" class="flex items-center gap-3 group" onclick="closeModal(); return false;">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--accent)] to-emerald-400 flex items-center justify-center transition-transform group-hover:scale-110">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0a0a0f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <path d="m10 13-2 2 2 2"/><path d="m14 17 2-2-2-2"/>
+        <!-- Logo -->
+        <a href="#" class="flex items-center gap-3 group" onclick="resetView(); return false;">
+          <div class="w-8 h-8 flex items-center justify-center text-[var(--accent)]">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
             </svg>
           </div>
-          <span class="text-xl font-bold tracking-tight" style="font-family: 'Space Grotesk', sans-serif;">FileForge</span>
+          <span class="text-lg font-bold tracking-tight font-display">CalciLab</span>
         </a>
 
-        <nav class="hidden md:flex items-center gap-1">
-          <a href="#" class="px-4 py-2 rounded-lg text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--bg-elevated)] transition-colors">All Tools</a>
-          <a href="#" class="px-4 py-2 rounded-lg text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--bg-elevated)] transition-colors">API</a>
-        </nav>
-
-        <div class="flex items-center gap-3">
-          <button class="hidden sm:flex px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--muted)] hover:text-[var(--fg)] hover:border-[var(--accent)] transition-colors">Sign In</button>
-          <button class="px-5 py-2.5 rounded-lg bg-[var(--accent)] text-[var(--bg)] font-semibold hover:brightness-110 transition-all">Get Started</button>
+        <!-- Auth Section -->
+        <div id="authArea" class="flex items-center gap-4">
+          <!-- Logged Out State -->
+          <div id="loggedOutState">
+            <button onclick="openAuthModal()" class="btn-secondary text-sm py-2 px-4">Sign In</button>
+          </div>
+          <!-- Logged In State -->
+          <div id="loggedInState" class="hidden items-center gap-3">
+            <div class="text-right hidden sm:block">
+              <p class="text-xs text-[var(--muted)]">Logged in as</p>
+              <p class="text-sm font-medium" id="userName">User</p>
+            </div>
+            <div class="relative">
+               <button onclick="toggleUserMenu()" class="user-avatar" id="userAvatarBtn">U</button>
+               <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 glass-panel border border-[var(--border)] rounded-sm shadow-xl">
+                 <div class="p-3 border-b border-[var(--border)]">
+                   <p class="text-sm font-medium" id="menuUserName">User</p>
+                   <p class="text-xs text-[var(--muted)]" id="menuUserEmail">email@example.com</p>
+                 </div>
+                 <button onclick="signOut()" class="w-full text-left px-3 py-2 text-sm text-[var(--danger)] hover:bg-[var(--card)] transition-colors">
+                   Sign Out
+                 </button>
+               </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section class="pt-16 pb-8 sm:pt-24 sm:pb-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center reveal">
-        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-          Transform Your Files<br><span class="text-[var(--accent)]">Instantly</span>
-        </h1>
-        <p class="text-lg sm:text-xl text-[var(--muted)] max-w-2xl mx-auto mb-10">Free online tools to convert, edit, and optimize your documents, images, and videos. No registration required.</p>
-        <div class="search-wrapper reveal max-w-xl mx-auto" style="transition-delay: 100ms;">
-          <svg class="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--muted)]" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input type="text" class="search-input" placeholder="Search tools... (e.g., PDF to Word, Image Compress)" id="searchInput" aria-label="Search tools">
+  <!-- Main Content -->
+  <main class="relative z-10">
+    <!-- Hero -->
+    <section class="pt-20 pb-12 sm:pt-32 sm:pb-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center animate-in">
+          <p class="text-[var(--accent)] text-xs tracking-widest uppercase mb-4">Computational Toolkit</p>
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight mb-6">
+            File Computation<br>Engine
+          </h1>
+          <p class="text-[var(--muted)] text-base sm:text-lg mb-10 max-w-xl mx-auto">
+            Programmatically transform your data. High-performance tools for image, document, and data processing.
+          </p>
+        </div>
+
+        <!-- Search -->
+        <div class="max-w-xl mx-auto relative animate-in" style="animation-delay: 100ms;">
+          <svg class="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--muted)]" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" class="search-input" placeholder="Query tools... (e.g., 'resize image', 'pdf')" id="searchInput">
         </div>
       </div>
+    </section>
 
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-8 mt-16 reveal" style="transition-delay: 200ms;">
-        <div class="text-center p-4"><div class="stat-number" data-count="150">0</div><div class="text-[var(--muted)] text-sm mt-1">Free Tools</div></div>
-        <div class="text-center p-4"><div class="stat-number" data-count="50">0</div><div class="text-[var(--muted)] text-sm mt-1">M+ Files Processed</div></div>
-        <div class="text-center p-4"><div class="stat-number" data-count="99">0</div><div class="text-[var(--muted)] text-sm mt-1">% Uptime</div></div>
-        <div class="text-center p-4"><div class="stat-number" data-count="0">0</div><div class="text-[var(--muted)] text-sm mt-1">Cost to Use</div></div>
+    <!-- Categories -->
+    <section class="py-4 border-y border-[var(--border)] glass-panel">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" id="categoriesContainer">
+          <button class="category-pill active" data-category="all">All Modules</button>
+          <button class="category-pill" data-category="image">Image</button>
+          <button class="category-pill" data-category="pdf">PDF</button>
+          <button class="category-pill" data-category="video">Video</button>
+          <button class="category-pill" data-category="audio">Audio</button>
+          <button class="category-pill" data-category="dev">Dev Tools</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tools Grid -->
+    <section class="py-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-[var(--border)]" id="toolsGrid">
+          <!-- Tools injected here -->
+        </div>
+        <div class="hidden text-center py-16 text-[var(--muted)]" id="emptyState">
+          No modules found matching query.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Auth Modal -->
+  <div id="authModal" class="modal-overlay" onclick="if(event.target === this) closeAuthModal();">
+    <div class="modal-content p-8" onclick="event.stopPropagation()">
+      <div class="text-center mb-8">
+        <h2 class="text-xl font-bold font-display mb-2">Sign In to CalciLab</h2>
+        <p class="text-[var(--muted)] text-sm">Sync your settings and processing history</p>
+      </div>
+      <div class="space-y-4">
+        <button onclick="signIn('google')" class="auth-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Continue with Google
+        </button>
+        <button onclick="signIn('github')" class="auth-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          Continue with GitHub
+        </button>
+      </div>
+      <div class="mt-6 pt-6 border-t border-[var(--border)] text-center">
+        <p class="text-xs text-[var(--muted)]">By signing in, you agree to our Terms of Service</p>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- Categories -->
-  <section class="py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex gap-3 overflow-x-auto pb-4 reveal" id="categoriesContainer" style="transition-delay: 300ms;">
-        <button class="category-pill active" data-category="all">All Tools</button>
-        <button class="category-pill" data-category="pdf">PDF Tools</button>
-        <button class="category-pill" data-category="image">Image Tools</button>
-        <button class="category-pill" data-category="video">Video Tools</button>
-        <button class="category-pill" data-category="document">Document</button>
-        <button class="category-pill" data-category="audio">Audio</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- Tools Grid -->
-  <section class="py-8 pb-24">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="toolsGrid"></div>
-      <div class="hidden text-center py-16" id="emptyState">
-        <svg class="mx-auto mb-4 text-[var(--muted)]" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg>
-        <p class="text-[var(--muted)] text-lg">No tools found matching your search</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Tool Modal -->
-  <div class="modal-overlay" id="toolModal" onclick="if(event.target === this) closeModal();">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <div class="p-6 border-b border-[var(--border)]">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <div class="tool-icon" id="modalIcon"></div>
-            <div>
-              <h2 class="text-xl font-bold" id="modalTitle">Tool Name</h2>
-              <p class="text-sm text-[var(--muted)]" id="modalDesc">Tool description</p>
-            </div>
+  <!-- Tool Processing Modal -->
+  <div id="toolModal" class="modal-overlay" onclick="if(event.target === this) closeModal();">
+    <div class="modal-content max-w-2xl" onclick="event.stopPropagation()">
+      <div class="p-4 border-b border-[var(--border)] flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 flex items-center justify-center text-[var(--accent)]" id="modalIcon"></div>
+          <div>
+            <h3 class="font-bold font-display" id="modalTitle">Tool Name</h3>
+            <p class="text-xs text-[var(--muted)]" id="modalDesc">Description</p>
           </div>
-          <button onclick="closeModal()" class="p-2 rounded-lg hover:bg-[var(--card)] transition-colors" aria-label="Close modal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
-          </button>
         </div>
+        <button onclick="closeModal()" class="p-1 hover:text-[var(--accent)] transition-colors">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
       </div>
 
       <div class="p-6" id="modalBody">
-        <!-- Upload Zone -->
+        <!-- Sections: Upload, Options, Processing, Result -->
         <div id="uploadSection">
           <div class="upload-zone" id="uploadZone">
-            <svg class="mx-auto mb-4 text-[var(--accent)]" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <p class="text-lg font-medium mb-1">Drop your file here</p>
-            <p class="text-[var(--muted)] text-sm mb-4">or click to browse</p>
+            <svg class="mx-auto mb-3 text-[var(--accent)]" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <p class="text-sm mb-1">Drop file here or click to upload</p>
+            <p class="text-xs text-[var(--muted)]" id="fileTypeHint">Supports: Images</p>
             <input type="file" id="fileInput" class="hidden">
-            <button class="btn-secondary" onclick="document.getElementById('fileInput').click()">Select File</button>
           </div>
         </div>
 
-        <!-- Options Section -->
-        <div id="optionsSection" class="hidden mt-6">
-          <div id="toolOptions"></div>
-          <div class="flex gap-3 mt-6">
-            <button class="btn-secondary flex-1" onclick="resetUpload()">Choose Different File</button>
-            <button class="btn-primary flex-1" id="processBtn" onclick="processFile()">Process File</button>
+        <div id="optionsSection" class="hidden space-y-4">
+          <div class="p-4 bg-[var(--card)] border border-[var(--border)] text-sm">
+            <span class="text-[var(--muted)]">File:</span> <span id="fileNameDisplay">file.png</span>
+          </div>
+          <div id="toolOptionsContainer"></div>
+          <div class="flex gap-3">
+            <button onclick="resetUpload()" class="btn-secondary flex-1 text-sm py-2">Cancel</button>
+            <button onclick="processFile()" class="btn-primary flex-1 text-sm py-2">Execute</button>
           </div>
         </div>
 
-        <!-- Processing Section -->
-        <div id="processingSection" class="hidden mt-6">
-          <div class="text-center py-8">
-            <div class="w-16 h-16 mx-auto mb-4 rounded-full border-4 border-[var(--border)] border-t-[var(--accent)] animate-spin"></div>
-            <p class="text-lg font-medium" id="processingText">Processing your file...</p>
-            <div class="progress-bar mt-4 max-w-xs mx-auto"><div class="progress-fill" id="progressFill" style="width: 0%"></div></div>
-          </div>
+        <div id="processingSection" class="hidden text-center py-8">
+          <div class="w-12 h-12 mx-auto mb-4 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-sm font-medium" id="processingText">Processing...</p>
+          <div class="progress-track mt-4 max-w-xs mx-auto"><div class="progress-bar" id="progressBar" style="width: 0%"></div></div>
         </div>
 
-        <!-- Result Section -->
-        <div id="resultSection" class="hidden mt-6">
-          <div class="text-center py-8">
-            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--success)] bg-opacity-20 flex items-center justify-center">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <p class="text-lg font-medium mb-1">Processing Complete!</p>
-            <p class="text-[var(--muted)] text-sm mb-6" id="resultInfo">Your file is ready to download</p>
-            <div class="flex gap-3 justify-center">
-              <button class="btn-primary" id="downloadBtn">
-                <span class="flex items-center gap-2">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  Download
-                </span>
-              </button>
-              <button class="btn-secondary" onclick="resetUpload()">Process Another</button>
-            </div>
-          </div>
+        <div id="resultSection" class="hidden text-center py-8">
+          <svg class="mx-auto mb-4 text-[var(--accent)]" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <p class="font-medium mb-1">Execution Complete</p>
+          <p class="text-xs text-[var(--muted)] mb-6" id="resultStats"></p>
+          <button onclick="downloadResult()" id="downloadBtn" class="btn-primary text-sm py-2 px-6">Download Result</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="border-t border-[var(--border)] py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center text-[var(--muted)] text-sm">© 2024 FileForge. All rights reserved. Free file tools for everyone.</div>
-    </div>
-  </footer>
-
   <script>
-    // Tool definitions
+    // --- DATA & STATE ---
     const tools = [
-      { name: 'Image Resizer', desc: 'Resize images to any dimension', category: 'image', icon: 'maximize-2', color: '#3b82f6', popular: true, type: 'resize', accept: 'image/*' },
-      { name: 'Image Compressor', desc: 'Compress images without quality loss', category: 'image', icon: 'minimize-2', color: '#22c55e', popular: true, type: 'compress', accept: 'image/*' },
-      { name: 'Image to PDF', desc: 'Convert images to PDF documents', category: 'image', icon: 'file-plus', color: '#ef4444', popular: true, type: 'imageToPdf', accept: 'image/*' },
-      { name: 'PNG to JPG', desc: 'Convert PNG images to JPG format', category: 'image', icon: 'refresh-cw', color: '#8b5cf6', type: 'pngToJpg', accept: 'image/png' },
-      { name: 'JPG to PNG', desc: 'Convert JPG images to PNG format', category: 'image', icon: 'refresh-cw', color: '#a855f7', type: 'jpgToPng', accept: 'image/jpeg' },
-      { name: 'Remove Background', desc: 'Remove image backgrounds automatically', category: 'image', icon: 'eraser', color: '#ec4899', popular: true, type: 'demo', accept: 'image/*' },
-      { name: 'Image Cropper', desc: 'Crop images to custom dimensions', category: 'image', icon: 'crop', color: '#f43f5e', type: 'demo', accept: 'image/*' },
-      { name: 'WebP Converter', desc: 'Convert images to and from WebP format', category: 'image', icon: 'image', color: '#f97316', type: 'demo', accept: 'image/*' },
-      
-      { name: 'PDF to Word', desc: 'Convert PDF documents to editable Word files', category: 'pdf', icon: 'file-text', color: '#ef4444', popular: true, type: 'demo', accept: '.pdf' },
-      { name: 'Merge PDF', desc: 'Combine multiple PDF files into one document', category: 'pdf', icon: 'layers', color: '#eab308', popular: true, type: 'demo', accept: '.pdf' },
-      { name: 'Split PDF', desc: 'Separate PDF pages into individual files', category: 'pdf', icon: 'scissors', color: '#84cc16', type: 'demo', accept: '.pdf' },
-      { name: 'Compress PDF', desc: 'Reduce PDF file size while maintaining quality', category: 'pdf', icon: 'minimize-2', color: '#22c55e', popular: true, type: 'demo', accept: '.pdf' },
-      
-      { name: 'Video Converter', desc: 'Convert videos between any format', category: 'video', icon: 'film', color: '#ef4444', popular: true, type: 'demo', accept: 'video/*' },
-      { name: 'Video Compressor', desc: 'Reduce video file size significantly', category: 'video', icon: 'minimize-2', color: '#f97316', popular: true, type: 'demo', accept: 'video/*' },
-      { name: 'Video to MP3', desc: 'Extract audio from video files', category: 'video', icon: 'music', color: '#eab308', type: 'demo', accept: 'video/*' },
-      { name: 'Video to GIF', desc: 'Convert video clips to animated GIFs', category: 'video', icon: 'play', color: '#22c55e', type: 'demo', accept: 'video/*' },
-      
-      { name: 'Document Scanner', desc: 'Scan documents using your camera', category: 'document', icon: 'scan', color: '#8b5cf6', type: 'demo', accept: 'image/*' },
-      { name: 'OCR Text Extract', desc: 'Extract text from images and PDFs', category: 'document', icon: 'file-search', color: '#a855f7', popular: true, type: 'demo', accept: '.pdf,image/*' },
-      
-      { name: 'MP3 Converter', desc: 'Convert audio to MP3 format', category: 'audio', icon: 'music', color: '#f43f5e', popular: true, type: 'demo', accept: 'audio/*' },
-      { name: 'Audio Merger', desc: 'Combine multiple audio files', category: 'audio', icon: 'git-merge', color: '#ef4444', type: 'demo', accept: 'audio/*' },
+      { name: 'Image Resize', desc: 'Resize images to custom dimensions', category: 'image', icon: 'maximize', color: '#3b82f6', type: 'resize', accept: 'image/*' },
+      { name: 'Image Compress', desc: 'Optimize image file size', category: 'image', icon: 'minimize', color: '#10b981', type: 'compress', accept: 'image/*' },
+      { name: 'Image to PDF', desc: 'Convert image to PDF document', category: 'image', icon: 'file', color: '#ef4444', type: 'imageToPdf', accept: 'image/*' },
+      { name: 'PNG to JPG', desc: 'Convert PNG to JPG format', category: 'image', icon: 'refresh', color: '#8b5cf6', type: 'pngToJpg', accept: '.png' },
+      { name: 'JSON Formatter', desc: 'Format and validate JSON data', category: 'dev', icon: 'code', color: '#f59e0b', type: 'demo', accept: '.json' },
+      { name: 'Markdown Preview', desc: 'Preview markdown as HTML', category: 'dev', icon: 'eye', color: '#06b6d4', type: 'demo', accept: '.md' },
+      { name: 'Video Compress', desc: 'Reduce video file size', category: 'video', icon: 'video', color: '#ec4899', type: 'demo', accept: 'video/*' },
+      { name: 'MP3 Converter', desc: 'Convert audio to MP3', category: 'audio', icon: 'music', color: '#84cc16', type: 'demo', accept: 'audio/*' },
     ];
 
     const icons = {
-      'file-text': '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
-      'image': '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>',
-      'layers': '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
-      'scissors': '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/>',
-      'minimize-2': '<polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/>',
-      'maximize-2': '<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>',
-      'refresh-cw': '<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
-      'file-plus': '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>',
-      'eraser': '<path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>',
-      'crop': '<path d="M6.13 1L6 16a2 2 0 0 0 2 2h15"/><path d="M1 6.13L16 6a2 2 0 0 1 2 2v15"/>',
-      'film': '<rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/>',
-      'music': '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
-      'play': '<polygon points="5 3 19 12 5 21 5 3"/>',
-      'scan': '<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>',
-      'file-search': '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><circle cx="10" cy="13" r="2"/><path d="m20 17-1.5-1.5"/>',
-      'git-merge': '<circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/>'
+      maximize: '<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>',
+      minimize: '<polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/>',
+      file: '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/>',
+      refresh: '<polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>',
+      code: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+      eye: '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+      video: '<polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>',
+      music: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'
     };
 
-    // State
-    let currentTool = null;
-    let uploadedFile = null;
-    let processedResult = null;
-    let currentCategory = 'all';
-    let searchQuery = '';
+    let state = {
+      user: null,
+      currentTool: null,
+      uploadedFile: null,
+      processedResult: null,
+      category: 'all',
+      search: ''
+    };
 
-    // Helper functions
-    function renderIcon(iconName, color) {
-      return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icons[iconName] || ''}</svg>`;
+    // --- CANVAS ANIMATION ---
+    const canvas = document.getElementById('networkCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let animationId;
+
+    function initCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      particles = [];
+      const particleCount = Math.floor((canvas.width * canvas.height) / 15000);
+      
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
+          size: Math.random() * 2 + 1
+        });
+      }
     }
 
-    function renderTools(filteredTools) {
-      const grid = document.getElementById('toolsGrid');
-      const emptyState = document.getElementById('emptyState');
+    function animateCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      if (filteredTools.length === 0) {
+      // Update and draw particles
+      particles.forEach((p, i) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+        
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 255, 200, 0.5)';
+        ctx.fill();
+        
+        // Draw connections
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(0, 255, 200, ${0.1 * (1 - dist / 120)})`;
+            ctx.stroke();
+          }
+        }
+      });
+      
+      animationId = requestAnimationFrame(animateCanvas);
+    }
+
+    window.addEventListener('resize', () => {
+      cancelAnimationFrame(animationId);
+      initCanvas();
+      animateCanvas();
+    });
+    
+    // Start animation
+    initCanvas();
+    animateCanvas();
+
+    // --- AUTH SYSTEM (Simulated) ---
+    function openAuthModal() {
+      document.getElementById('authModal').classList.add('active');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModal').classList.remove('active');
+    }
+
+    function signIn(provider) {
+      // Simulate auth delay
+      const btn = event.target.closest('button');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="animate-pulse">Connecting...</span>';
+      
+      setTimeout(() => {
+        const user = {
+          name: provider === 'google' ? 'Google User' : 'GitHub Developer',
+          email: `user@${provider}.com`,
+          provider: provider,
+          initial: provider === 'google' ? 'G' : 'D'
+        };
+        
+        state.user = user;
+        localStorage.setItem('calcilab_user', JSON.stringify(user));
+        updateAuthUI();
+        closeAuthModal();
+        
+        // Reset button for next time
+        btn.disabled = false;
+        btn.innerHTML = provider === 'google' 
+          ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Continue with Google'
+          : '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg> Continue with GitHub';
+      }, 1500);
+    }
+
+    function signOut() {
+      state.user = null;
+      localStorage.removeItem('calcilab_user');
+      updateAuthUI();
+      document.getElementById('userMenu').classList.add('hidden');
+    }
+
+    function toggleUserMenu() {
+      document.getElementById('userMenu').classList.toggle('hidden');
+    }
+
+    function updateAuthUI() {
+      const loggedOut = document.getElementById('loggedOutState');
+      const loggedIn = document.getElementById('loggedInState');
+      
+      if (state.user) {
+        loggedOut.classList.add('hidden');
+        loggedIn.classList.remove('hidden');
+        loggedIn.classList.add('flex');
+        
+        document.getElementById('userName').textContent = state.user.name;
+        document.getElementById('menuUserName').textContent = state.user.name;
+        document.getElementById('menuUserEmail').textContent = state.user.email;
+        document.getElementById('userAvatarBtn').textContent = state.user.initial;
+      } else {
+        loggedOut.classList.remove('hidden');
+        loggedIn.classList.add('hidden');
+      }
+    }
+
+    // Check for existing session on load
+    const savedUser = localStorage.getItem('calcilab_user');
+    if (savedUser) {
+      state.user = JSON.parse(savedUser);
+      updateAuthUI();
+    }
+
+    // --- TOOL FUNCTIONS ---
+    function renderIcon(name, color) {
+      return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icons[name] || ''}</svg>`;
+    }
+
+    function renderTools() {
+      const grid = document.getElementById('toolsGrid');
+      const empty = document.getElementById('emptyState');
+      
+      let filtered = tools;
+      if (state.category !== 'all') filtered = filtered.filter(t => t.category === state.category);
+      if (state.search) {
+        const s = state.search.toLowerCase();
+        filtered = filtered.filter(t => t.name.toLowerCase().includes(s) || t.desc.toLowerCase().includes(s));
+      }
+
+      if (!filtered.length) {
         grid.innerHTML = '';
-        emptyState.classList.remove('hidden');
+        empty.classList.remove('hidden');
         return;
       }
-      
-      emptyState.classList.add('hidden');
-      grid.innerHTML = filteredTools.map((tool, index) => `
-        <div class="tool-card reveal visible" data-tool-id="${tool.name}" tabindex="0" role="button" aria-label="${tool.name}">
-          <div class="tool-icon" style="background: ${tool.color}22;">${renderIcon(tool.icon, tool.color)}</div>
-          <h3 class="font-semibold text-lg mb-2 relative z-10 flex items-center gap-2 flex-wrap">
-            ${tool.name}
-            ${tool.popular ? '<span class="text-xs px-2 py-0.5 rounded-full bg-[var(--accent)] text-[var(--bg)] font-medium">Popular</span>' : ''}
-          </h3>
-          <p class="text-[var(--muted)] text-sm relative z-10">${tool.desc}</p>
+
+      empty.classList.add('hidden');
+      grid.innerHTML = filtered.map(t => `
+        <div class="tool-card bg-[var(--card)]" data-tool-name="${t.name}" onclick="openTool('${t.name}')">
+          <div class="flex items-start gap-3">
+            <div class="p-2 bg-[var(--bg)] border border-[var(--border)]" style="color: ${t.color}">${renderIcon(t.icon, t.color)}</div>
+            <div>
+              <h3 class="font-semibold text-sm font-display">${t.name}</h3>
+              <p class="text-xs text-[var(--muted)] mt-1">${t.desc}</p>
+            </div>
+          </div>
         </div>
       `).join('');
     }
 
-    function filterTools() {
-      let filtered = tools;
-      if (currentCategory !== 'all') filtered = filtered.filter(t => t.category === currentCategory);
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        filtered = filtered.filter(t => t.name.toLowerCase().includes(query) || t.desc.toLowerCase().includes(query));
-      }
-      renderTools(filtered);
-    }
-
-    // Modal functions
-    function openModal(tool) {
-      currentTool = tool;
-      const modal = document.getElementById('toolModal');
+    function openTool(name) {
+      const tool = tools.find(t => t.name === name);
+      if (!tool) return;
+      
+      state.currentTool = tool;
+      state.uploadedFile = null;
+      
       document.getElementById('modalTitle').textContent = tool.name;
       document.getElementById('modalDesc').textContent = tool.desc;
       document.getElementById('modalIcon').innerHTML = renderIcon(tool.icon, tool.color);
-      document.getElementById('modalIcon').style.background = tool.color + '22';
       document.getElementById('fileInput').accept = tool.accept;
+      document.getElementById('fileTypeHint').textContent = `Accepts: ${tool.accept}`;
       
-      modal.classList.add('active');
-      document.body.style.overflow = 'hidden';
       resetUpload();
+      document.getElementById('toolModal').classList.add('active');
     }
 
     function closeModal() {
       document.getElementById('toolModal').classList.remove('active');
-      document.body.style.overflow = '';
-      currentTool = null;
-      uploadedFile = null;
-      processedResult = null;
     }
 
     function resetUpload() {
-      uploadedFile = null;
-      processedResult = null;
+      state.uploadedFile = null;
+      state.processedResult = null;
       document.getElementById('uploadSection').classList.remove('hidden');
       document.getElementById('optionsSection').classList.add('hidden');
       document.getElementById('processingSection').classList.add('hidden');
@@ -615,294 +684,195 @@
       document.getElementById('fileInput').value = '';
     }
 
-    function showOptions(file) {
-      uploadedFile = file;
+    function resetView() {
+      state.category = 'all';
+      state.search = '';
+      document.querySelectorAll('.category-pill').forEach(b => b.classList.remove('active'));
+      document.querySelector('[data-category="all"]').classList.add('active');
+      document.getElementById('searchInput').value = '';
+      renderTools();
+    }
+
+    // --- FILE PROCESSING ---
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+
+    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', e => { if (e.target.files.length) handleFile(e.target.files[0]); });
+    uploadZone.addEventListener('click', () => fileInput.click());
+
+    function handleFile(file) {
+      state.uploadedFile = file;
+      document.getElementById('fileNameDisplay').textContent = file.name;
       document.getElementById('uploadSection').classList.add('hidden');
       
-      const optionsContainer = document.getElementById('toolOptions');
-      let optionsHTML = `<div class="p-4 rounded-xl bg-[var(--card)] border border-[var(--border)]"><p class="text-sm font-medium mb-2">Selected File:</p><p class="text-[var(--muted)] text-sm">${file.name} (${(file.size / 1024).toFixed(1)} KB)</p></div>`;
-      
-      // Tool-specific options
-      if (currentTool.type === 'resize') {
-        optionsHTML += `
-          <div class="mt-4 grid grid-cols-2 gap-4">
-            <div><label class="text-sm text-[var(--muted)] block mb-2">Width (px)</label><input type="number" id="resizeWidth" class="input-field" placeholder="800"></div>
-            <div><label class="text-sm text-[var(--muted)] block mb-2">Height (px)</label><input type="number" id="resizeHeight" class="input-field" placeholder="600"></div>
-          </div>
-          <label class="flex items-center gap-2 mt-4 text-sm cursor-pointer">
-            <input type="checkbox" id="maintainRatio" checked class="w-4 h-4 accent-[var(--accent)]">
-            <span>Maintain aspect ratio</span>
-          </label>`;
-      } else if (currentTool.type === 'compress') {
-        optionsHTML += `
-          <div class="mt-4">
-            <label class="text-sm text-[var(--muted)] block mb-2">Quality: <span id="qualityValue">80</span>%</label>
-            <input type="range" id="compressQuality" min="10" max="100" value="80" class="w-full accent-[var(--accent)]" oninput="document.getElementById('qualityValue').textContent = this.value">
+      // Generate options
+      const optionsContainer = document.getElementById('toolOptionsContainer');
+      if (state.currentTool.type === 'resize') {
+        optionsContainer.innerHTML = `
+          <div class="grid grid-cols-2 gap-4">
+            <div><label class="text-xs text-[var(--muted)] block mb-1">Width (px)</label><input type="number" id="opt_width" value="800" class="w-full p-2 bg-[var(--bg)] border border-[var(--border)] text-sm"></div>
+            <div><label class="text-xs text-[var(--muted)] block mb-1">Height (px)</label><input type="number" id="opt_height" value="600" class="w-full p-2 bg-[var(--bg)] border border-[var(--border)] text-sm"></div>
           </div>`;
+      } else if (state.currentTool.type === 'compress') {
+        optionsContainer.innerHTML = `
+          <div><label class="text-xs text-[var(--muted)] block mb-1">Quality: <span id="qVal">80</span>%</label>
+          <input type="range" id="opt_quality" min="10" max="100" value="80" class="w-full" oninput="document.getElementById('qVal').textContent=this.value"></div>`;
+      } else {
+        optionsContainer.innerHTML = '<p class="text-xs text-[var(--muted)] text-center py-2">No options available. Click Execute.</p>';
       }
       
-      optionsContainer.innerHTML = optionsHTML;
       document.getElementById('optionsSection').classList.remove('hidden');
     }
 
     async function processFile() {
-      if (!uploadedFile || !currentTool) return;
-
+      if (!state.uploadedFile) return;
+      
       document.getElementById('optionsSection').classList.add('hidden');
       document.getElementById('processingSection').classList.remove('hidden');
       
-      const progressFill = document.getElementById('progressFill');
-      const processingText = document.getElementById('processingText');
-
-      // Animate progress
+      const progressBar = document.getElementById('progressBar');
+      const procText = document.getElementById('processingText');
+      
       let progress = 0;
-      const progressInterval = setInterval(() => {
-        progress += Math.random() * 15;
-        if (progress > 90) progress = 90;
-        progressFill.style.width = progress + '%';
-      }, 200);
+      const interval = setInterval(() => {
+        progress += 5 + Math.random() * 10;
+        if (progress > 95) progress = 95;
+        progressBar.style.width = progress + '%';
+      }, 100);
 
       try {
         let result = null;
+        const file = state.uploadedFile;
         
-        if (currentTool.type === 'resize') {
-          processingText.textContent = 'Resizing image...';
-          const width = parseInt(document.getElementById('resizeWidth').value) || 800;
-          const height = parseInt(document.getElementById('resizeHeight').value) || 600;
-          result = await resizeImage(uploadedFile, width, height);
-        } else if (currentTool.type === 'compress') {
-          processingText.textContent = 'Compressing image...';
-          const quality = parseInt(document.getElementById('compressQuality').value) / 100;
-          result = await compressImage(uploadedFile, quality);
-        } else if (currentTool.type === 'imageToPdf') {
-          processingText.textContent = 'Creating PDF...';
-          result = await imageToPdf(uploadedFile);
-        } else if (currentTool.type === 'pngToJpg') {
-          processingText.textContent = 'Converting to JPG...';
-          result = await convertImage(uploadedFile, 'image/jpeg', 0.92);
-        } else if (currentTool.type === 'jpgToPng') {
-          processingText.textContent = 'Converting to PNG...';
-          result = await convertImage(uploadedFile, 'image/png');
+        if (state.currentTool.type === 'resize') {
+          procText.textContent = 'Resizing...';
+          const w = parseInt(document.getElementById('opt_width').value);
+          const h = parseInt(document.getElementById('opt_height').value);
+          result = await processImage(file, 'resize', { w, h });
+        } else if (state.currentTool.type === 'compress') {
+          procText.textContent = 'Compressing...';
+          const q = parseInt(document.getElementById('opt_quality').value) / 100;
+          result = await processImage(file, 'compress', { q });
+        } else if (state.currentTool.type === 'imageToPdf') {
+          procText.textContent = 'Converting to PDF...';
+          result = await imageToPdf(file);
+        } else if (state.currentTool.type === 'pngToJpg') {
+          procText.textContent = 'Converting to JPG...';
+          result = await processImage(file, 'convert', { type: 'image/jpeg', q: 0.9 });
         } else {
-          // Demo mode - simulate processing
-          processingText.textContent = 'Processing (Demo Mode)...';
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          result = { blob: uploadedFile, filename: uploadedFile.name };
+          // Demo mode
+          procText.textContent = 'Processing (Demo)...';
+          await new Promise(r => setTimeout(r, 2000));
+          result = { blob: file, name: file.name };
         }
 
-        clearInterval(progressInterval);
-        progressFill.style.width = '100%';
+        clearInterval(interval);
+        progressBar.style.width = '100%';
         
-        processedResult = result;
+        state.processedResult = result;
         
         setTimeout(() => {
           document.getElementById('processingSection').classList.add('hidden');
           document.getElementById('resultSection').classList.remove('hidden');
-          
-          const originalSize = (uploadedFile.size / 1024).toFixed(1);
+          const original = (file.size / 1024).toFixed(1);
           const newSize = (result.blob.size / 1024).toFixed(1);
-          document.getElementById('resultInfo').textContent = `Original: ${originalSize} KB → Result: ${newSize} KB`;
-          
-          document.getElementById('downloadBtn').onclick = () => downloadResult();
+          document.getElementById('resultStats').textContent = `Input: ${original} KB → Output: ${newSize} KB`;
         }, 500);
 
-      } catch (error) {
-        clearInterval(progressInterval);
-        alert('Error processing file: ' + error.message);
+      } catch (err) {
+        clearInterval(interval);
+        alert('Error: ' + err.message);
         resetUpload();
       }
     }
 
-    // Image processing functions
     function loadImage(file) {
-      return new Promise((resolve, reject) => {
+      return new Promise((res, rej) => {
         const img = new Image();
-        img.onload = () => resolve(img);
-        img.onerror = reject;
+        img.onload = () => res(img);
+        img.onerror = rej;
         img.src = URL.createObjectURL(file);
       });
     }
 
-    async function resizeImage(file, targetWidth, targetHeight) {
+    async function processImage(file, mode, opts) {
       const img = await loadImage(file);
       const canvas = document.createElement('canvas');
-      const maintainRatio = document.getElementById('maintainRatio')?.checked;
+      const ctx = canvas.getContext('2d');
       
-      let width = targetWidth;
-      let height = targetHeight;
+      let w = img.width, h = img.height;
       
-      if (maintainRatio) {
-        const ratio = img.width / img.height;
-        if (targetWidth / targetHeight > ratio) {
-          width = targetHeight * ratio;
-        } else {
-          height = targetWidth / ratio;
-        }
+      if (mode === 'resize') {
+        w = opts.w; h = opts.h;
       }
       
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, width, height);
+      canvas.width = w; canvas.height = h;
       
-      return new Promise(resolve => {
-        canvas.toBlob(blob => {
-          resolve({ blob, filename: file.name.replace(/\.[^.]+$/, '_resized.png') });
-        }, 'image/png');
-      });
-    }
-
-    async function compressImage(file, quality) {
-      const img = await loadImage(file);
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-      
-      return new Promise(resolve => {
-        canvas.toBlob(blob => {
-          resolve({ blob, filename: file.name.replace(/\.[^.]+$/, '_compressed.jpg') });
-        }, 'image/jpeg', quality);
-      });
-    }
-
-    async function convertImage(file, mimeType, quality) {
-      const img = await loadImage(file);
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      
-      if (mimeType === 'image/jpeg') {
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (mode === 'convert' || mode === 'compress') {
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, w, h);
       }
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, w, h);
       
-      const ext = mimeType === 'image/jpeg' ? 'jpg' : 'png';
-      
-      return new Promise(resolve => {
+      return new Promise(res => {
+        const type = mode === 'convert' ? 'image/jpeg' : 'image/png';
+        const quality = mode === 'compress' ? opts.q : (mode === 'convert' ? 0.9 : 1);
         canvas.toBlob(blob => {
-          resolve({ blob, filename: file.name.replace(/\.[^.]+$/, '.' + ext) });
-        }, mimeType, quality || 1);
+          res({ blob, name: file.name.replace(/\.[^.]+$/, `_processed.${mode === 'convert' ? 'jpg' : 'png'}`) });
+        }, type, quality);
       });
     }
 
     async function imageToPdf(file) {
       const { jsPDF } = window.jspdf;
       const img = await loadImage(file);
-      
-      const orientation = img.width > img.height ? 'landscape' : 'portrait';
-      const pdf = new jsPDF(orientation, 'px', [img.width, img.height]);
-      
-      const imgData = await new Promise(resolve => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.readAsDataURL(file);
-      });
-      
-      pdf.addImage(imgData, 'JPEG', 0, 0, img.width, img.height);
-      
-      const pdfBlob = pdf.output('blob');
-      return { blob: pdfBlob, filename: file.name.replace(/\.[^.]+$/, '.pdf') };
+      const pdf = new jsPDF(img.width > img.height ? 'l' : 'p', 'px', [img.width, img.height]);
+      const data = await new Promise(res => { const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(file); });
+      pdf.addImage(data, 'JPEG', 0, 0, img.width, img.height);
+      const blob = pdf.output('blob');
+      return { blob, name: file.name.replace(/\.[^.]+$/, '.pdf') };
     }
 
     function downloadResult() {
-      if (!processedResult) return;
-      const url = URL.createObjectURL(processedResult.blob);
+      if (!state.processedResult) return;
+      const url = URL.createObjectURL(state.processedResult.blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = processedResult.filename;
+      a.download = state.processedResult.name;
       a.click();
       URL.revokeObjectURL(url);
     }
 
-    // Event listeners
-    document.getElementById('toolsGrid').addEventListener('click', (e) => {
-      const card = e.target.closest('.tool-card');
-      if (card) {
-        const toolName = card.dataset.toolId;
-        const tool = tools.find(t => t.name === toolName);
-        if (tool) openModal(tool);
-      }
-    });
-
-    document.getElementById('categoriesContainer').addEventListener('click', (e) => {
+    // --- INIT & EVENT LISTENERS ---
+    document.getElementById('categoriesContainer').addEventListener('click', e => {
       if (e.target.classList.contains('category-pill')) {
-        document.querySelectorAll('.category-pill').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.category-pill').forEach(b => b.classList.remove('active'));
         e.target.classList.add('active');
-        currentCategory = e.target.dataset.category;
-        filterTools();
+        state.category = e.target.dataset.category;
+        renderTools();
       }
     });
 
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-      searchQuery = e.target.value;
-      filterTools();
+    document.getElementById('searchInput').addEventListener('input', e => {
+      state.search = e.target.value;
+      renderTools();
     });
 
-    // File upload handling
-    const uploadZone = document.getElementById('uploadZone');
-    const fileInput = document.getElementById('fileInput');
-
-    uploadZone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      uploadZone.classList.add('dragover');
-    });
-
-    uploadZone.addEventListener('dragleave', () => {
-      uploadZone.classList.remove('dragover');
-    });
-
-    uploadZone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      uploadZone.classList.remove('dragover');
-      if (e.dataTransfer.files.length) {
-        showOptions(e.dataTransfer.files[0]);
+    // Close menu when clicking outside
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#userMenu') && !e.target.closest('#userAvatarBtn')) {
+        document.getElementById('userMenu').classList.add('hidden');
       }
     });
 
-    fileInput.addEventListener('change', (e) => {
-      if (e.target.files.length) {
-        showOptions(e.target.files[0]);
-      }
-    });
-
-    // Reveal animation
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
-      });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-    // Counter animation
-    function animateCounters() {
-      document.querySelectorAll('.stat-number').forEach(counter => {
-        const target = parseInt(counter.dataset.count);
-        const duration = 2000;
-        const start = performance.now();
-        
-        function update(currentTime) {
-          const elapsed = currentTime - start;
-          const progress = Math.min(elapsed / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          counter.textContent = Math.floor(target * eased);
-          if (progress < 1) {
-            requestAnimationFrame(update);
-          } else {
-            counter.textContent = target + (target === 0 ? '' : '+');
-          }
-        }
-        requestAnimationFrame(update);
-      });
-    }
-
-    // Initialize
-    renderTools(tools);
-    animateCounters();
+    renderTools();
   </script>
 </body>
 </html>
