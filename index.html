@@ -19,6 +19,7 @@
       --accent-glow: rgba(0, 255, 200, 0.3);
       --card: #0f0f16;
       --border: #1a1a24;
+      --danger: #ff4d6a;
     }
 
     * { box-sizing: border-box; }
@@ -63,6 +64,7 @@
       flex-direction: column;
       justify-content: center;
       min-height: 80px;
+      overflow: hidden;
     }
 
     .calc-card::before {
@@ -71,6 +73,7 @@
       left: 0; top: 0; bottom: 0;
       width: 0; background: var(--accent);
       transition: width 0.2s ease;
+      z-index: 2;
     }
 
     .calc-card:hover {
@@ -80,6 +83,23 @@
 
     .calc-card:hover::before {
       width: 3px;
+    }
+    
+    .calc-card:hover .card-icon {
+        opacity: 0.2;
+        transform: translate(10%, -10%) scale(1.1);
+    }
+
+    .card-icon {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 64px;
+        height: 64px;
+        opacity: 0.08;
+        transition: all 0.3s ease;
+        z-index: 1;
+        pointer-events: none;
     }
 
     .category-pill {
@@ -271,7 +291,7 @@
   <script>
     // --- DATA: Complete Calculator List ---
     
-    // Helper functions to ensure correct formatting
+    // Helper functions
     const I = (id, label, ph, def) => ({ id, label, placeholder: ph, type: 'number', default: def });
     const T = (id, label, ph) => ({ id, label, placeholder: ph, type: 'text' });
     const D = (id, label) => ({ id, label, type: 'date' });
@@ -350,6 +370,21 @@
       { name: "Square Footage Calculator", category: "other", inputs: [I('l', 'Length (ft)', '20'), I('w', 'Width (ft)', '30')], formula: (i) => `Area: ${(i.l*i.w).toFixed(0)} sq ft` },
     ];
 
+    // --- ICON HELPER ---
+    function getIcon(category) {
+      const iconStyle = "width: 100%; height: 100%; stroke: var(--accent); fill: none; stroke-width: 1; stroke-linecap: round; stroke-linejoin: round;";
+      switch(category) {
+        case 'financial':
+          return `<svg viewBox="0 0 24 24" style="${iconStyle}"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>`;
+        case 'health':
+          return `<svg viewBox="0 0 24 24" style="${iconStyle}"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+        case 'math':
+          return `<svg viewBox="0 0 24 24" style="${iconStyle}"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
+        default:
+          return `<svg viewBox="0 0 24 24" style="${iconStyle}"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>`;
+      }
+    }
+
     // --- CORE LOGIC ---
 
     let state = { user: null, cat: 'all', search: '' };
@@ -362,6 +397,17 @@
         renderGrid();
         renderAuth();
         initCanvas();
+        
+        // Category Clicks
+        document.getElementById('catContainer').addEventListener('click', e => {
+          if(e.target.classList.contains('category-pill')) {
+            document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+            e.target.classList.add('active');
+            state.cat = e.target.dataset.category;
+            renderGrid();
+          }
+        });
+
       } catch (e) {
         console.error("Initialization Error", e);
       }
@@ -413,8 +459,9 @@
       
       grid.innerHTML = filtered.map(c => `
         <div class="calc-card" onclick="openCalc('${c.name}')">
-          <span class="text-[10px] text-[var(--accent)] uppercase tracking-wider">${c.category}</span>
-          <h3 class="text-sm font-display font-medium text-[var(--fg)]">${c.name}</h3>
+          <div class="card-icon">${getIcon(c.category)}</div>
+          <span class="text-[10px] text-[var(--accent)] uppercase tracking-wider relative z-10">${c.category}</span>
+          <h3 class="text-sm font-display font-medium text-[var(--fg)] relative z-10 mt-1">${c.name}</h3>
         </div>
       `).join('');
     }
@@ -461,7 +508,7 @@
     }
 
     function filterCalculators(v) { state.search = v; renderGrid(); }
-    function resetView() { state.search = ''; state.cat = 'all'; document.getElementById('searchInput').value=''; renderGrid(); }
+    function resetView() { state.search = ''; state.cat = 'all'; document.getElementById('searchInput').value=''; document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active')); document.querySelector('[data-category="all"]').classList.add('active'); renderGrid(); }
 
     // Auth
     function renderAuth() {
