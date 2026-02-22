@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- SEO Meta Tags -->
-  <meta name="description" content="CalciLab: Free online calculators for Finance, Health, Math, and Science. Calculate mortgages, BMI, loans, percentages, and more. Accurate, fast, and easy to use.">
+  <meta name="description" content="CalciLab: Free online calculators for Finance, Health, Math, and Science. AI-assisted calculations. Mortgage, BMI, Loan, Percentage calculators and more.">
   <meta name="keywords" content="online calculator, mortgage calculator, BMI calculator, loan calculator, scientific calculator, percentage calculator, financial tools, health tools">
   <meta name="author" content="CalciLab">
   <title>CalciLab - Free Online Calculators for Finance, Health & Math</title>
@@ -18,7 +18,7 @@
       --bg: #050508;
       --bg-elevated: #0c0c12;
       --fg: #e8e8f0;
-      --muted: #6b6b80; /* Slightly lighter for readability */
+      --muted: #6b6b80;
       --accent: #00ffc8;
       --accent-dim: rgba(0, 255, 200, 0.1);
       --accent-glow: rgba(0, 255, 200, 0.3);
@@ -35,22 +35,14 @@
       overflow-x: hidden;
     }
 
-    h1, h2, h3, h4, h5, h6, .font-display {
-      font-family: 'Space Grotesk', sans-serif;
-    }
+    h1, h2, h3, h4, h5, h6, .font-display { font-family: 'Space Grotesk', sans-serif; }
 
     #networkCanvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: -1;
-      opacity: 0.4;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.4;
     }
 
     .glass-panel {
-      background: rgba(12, 12, 18, 0.9);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      background: rgba(12, 12, 18, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
     }
 
     ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -58,162 +50,115 @@
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
     .calc-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      padding: 16px 20px;
-      transition: all 0.2s ease;
-      cursor: pointer;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      min-height: 80px;
-      overflow: hidden;
+      background: var(--card); border: 1px solid var(--border); padding: 16px 20px;
+      transition: all 0.2s ease; cursor: pointer; position: relative;
+      display: flex; flex-direction: column; justify-content: center; min-height: 80px; overflow: hidden;
     }
 
     .calc-card::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 0; background: var(--accent);
-      transition: width 0.2s ease;
-      z-index: 2;
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--accent);
+      transition: width 0.2s ease; z-index: 2;
     }
 
-    .calc-card:hover {
-      background: #141420;
-      border-color: var(--accent);
-    }
-
+    .calc-card:hover { background: #141420; border-color: var(--accent); }
     .calc-card:hover::before { width: 3px; }
-    
-    .calc-card:hover .card-icon {
-        opacity: 0.2;
-        transform: translate(10%, -10%) scale(1.1);
-    }
+    .calc-card:hover .card-icon { opacity: 0.2; transform: translate(10%, -10%) scale(1.1); }
 
     .card-icon {
-        position: absolute;
-        right: 0; top: 0;
-        width: 64px; height: 64px;
-        opacity: 0.08;
-        transition: all 0.3s ease;
-        z-index: 1;
-        pointer-events: none;
-        display: flex; align-items: center; justify-content: center;
+      position: absolute; right: 0; top: 0; width: 64px; height: 64px;
+      opacity: 0.08; transition: all 0.3s ease; z-index: 1; pointer-events: none;
+      display: flex; align-items: center; justify-content: center;
     }
     
     .card-icon svg {
-        width: 36px; height: 36px;
-        stroke: var(--accent);
-        fill: none; stroke-width: 1.5;
-        stroke-linecap: round; stroke-linejoin: round;
+      width: 36px; height: 36px; stroke: var(--accent); fill: none;
+      stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
     }
 
     .category-pill {
-      padding: 8px 16px;
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      white-space: nowrap;
-      transition: all 0.2s;
+      padding: 8px 16px; background: transparent; border: 1px solid var(--border);
+      color: var(--muted); font-size: 11px; text-transform: uppercase;
+      letter-spacing: 0.08em; white-space: nowrap; transition: all 0.2s;
     }
 
     .category-pill:hover, .category-pill.active {
-      background: var(--accent);
-      color: var(--bg);
-      border-color: var(--accent);
+      background: var(--accent); color: var(--bg); border-color: var(--accent);
     }
 
     .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.95);
-      backdrop-filter: blur(10px);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(10px);
+      z-index: 100; display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
     }
 
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
 
     .modal-content {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      width: 95%; max-width: 600px;
-      max-height: 90vh;
-      overflow-y: auto;
-      transform: translateY(20px);
-      transition: transform 0.3s;
+      background: var(--bg-elevated); border: 1px solid var(--border); width: 95%; max-width: 600px;
+      max-height: 90vh; overflow-y: auto; transform: translateY(20px); transition: transform 0.3s;
     }
 
     .modal-overlay.active .modal-content { transform: translateY(0); }
 
     .input-group { margin-bottom: 16px; }
-    
-    .input-label {
-      display: block;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
+    .input-label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; }
 
     .input-field {
-      width: 100%;
-      padding: 12px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--fg);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 14px;
-      border-radius: 2px;
+      width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border);
+      color: var(--fg); font-family: 'JetBrains Mono', monospace; font-size: 14px; border-radius: 2px;
     }
-
     .input-field:focus { outline: none; border-color: var(--accent); }
 
     .btn-primary {
-      width: 100%; padding: 12px;
-      background: var(--accent);
-      color: var(--bg);
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border: none; cursor: pointer;
-      transition: all 0.2s;
+      width: 100%; padding: 12px; background: var(--accent); color: var(--bg);
+      font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+      border: none; cursor: pointer; transition: all 0.2s;
     }
-
     .btn-primary:hover { box-shadow: 0 0 20px var(--accent-glow); }
 
     .result-box {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      padding: 20px;
-      margin-top: 20px;
-      min-height: 60px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 20px;
-      color: var(--accent);
-      text-align: right;
+      background: var(--bg); border: 1px solid var(--border); padding: 20px;
+      margin-top: 20px; min-height: 60px; font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px; color: var(--accent); text-align: right;
     }
 
-    .auth-avatar {
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      background: var(--accent-dim);
-      border: 1px solid var(--accent);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10px; font-weight: 700; color: var(--accent);
-      cursor: pointer;
+    /* Chatbot Styles */
+    .chatbot-btn {
+      position: fixed; bottom: 24px; right: 24px; width: 60px; height: 60px;
+      background: var(--accent); border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,0.5); cursor: pointer;
+      z-index: 999; transition: transform 0.2s, box-shadow 0.2s;
     }
+    .chatbot-btn:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--accent-glow); }
+    
+    .chat-window {
+      position: fixed; bottom: 100px; right: 24px; width: 360px; height: 500px;
+      background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px;
+      display: flex; flex-direction: column; z-index: 998; overflow: hidden;
+      box-shadow: 0 10px 50px rgba(0,0,0,0.8); transform: scale(0); opacity: 0;
+      transform-origin: bottom right; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .chat-window.active { transform: scale(1); opacity: 1; }
+    
+    .chat-header {
+      padding: 16px; background: var(--card); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    
+    .chat-body {
+      flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;
+    }
+    
+    .chat-msg { max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
+    .chat-msg.bot { background: var(--card); align-self: flex-start; border-bottom-left-radius: 2px; }
+    .chat-msg.user { background: var(--accent); color: var(--bg); align-self: flex-end; border-bottom-right-radius: 2px; }
+    
+    .chat-input-area {
+      padding: 12px; border-top: 1px solid var(--border); display: flex; gap: 8px;
+    }
+    .chat-input { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 8px 16px; color: var(--fg); font-size: 13px; }
+    .chat-send-btn { width: 36px; height: 36px; background: var(--accent); border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+    .chat-send-btn:hover { background: #00e6b5; }
 
     /* SEO Article Styles */
     .seo-section {
@@ -269,6 +214,10 @@
     .seo-faq-item.active .seo-faq-a { display: block; }
     .seo-faq-item.active .seo-faq-q svg { transform: rotate(180deg); }
     .seo-faq-q svg { transition: transform 0.2s; }
+
+    @media (max-width: 640px) {
+      .chat-window { width: calc(100% - 48px); height: 60vh; bottom: 90px; right: 24px; }
+    }
   </style>
 </head>
 <body class="min-h-screen">
@@ -281,7 +230,6 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-[var(--accent)]"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
         <span class="font-display font-bold tracking-tight">CalciLab</span>
       </a>
-      
       <div class="flex items-center gap-4">
         <input type="text" id="searchInput" placeholder="Search..." class="input-field py-2 px-3 text-xs w-32 sm:w-48 hidden sm:block" oninput="filterCalculators(this.value)">
         <div id="authArea"></div>
@@ -294,7 +242,7 @@
     <div class="max-w-7xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto scrollbar-hide" id="catContainer">
       <button class="category-pill active" data-category="all">All</button>
       <button class="category-pill" data-category="financial">Financial</button>
-      <button class="category-pill" data-category="health">Health & Fitness</button>
+      <button class="category-pill" data-category="health">Health</button>
       <button class="category-pill" data-category="math">Math</button>
       <button class="category-pill" data-category="other">Other</button>
     </div>
@@ -302,9 +250,7 @@
 
   <!-- Main Grid -->
   <main class="max-w-7xl mx-auto p-4">
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-px bg-[var(--border)]" id="gridContainer">
-      <!-- Grid items injected here -->
-    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-px bg-[var(--border)]" id="gridContainer"></div>
     <div id="emptyMsg" class="hidden text-center text-[var(--muted)] py-16">No calculators found.</div>
   </main>
 
@@ -319,17 +265,17 @@
 
         <h2 id="financial-tools">Master Your Finances with Advanced Tools</h2>
         <p>
-          Financial planning can be complex, but our <strong>Financial Calculator suite</strong> simplifies the numbers. From calculating monthly mortgage payments to understanding the nuances of compound interest, we provide the tools you need to make informed decisions. Use our <a href="#" class="text-[var(--accent)] hover:underline">Mortgage Calculator</a> to estimate home buying costs, or our <a href="#" class="text-[var(--accent)] hover:underline">ROI Calculator</a> to measure the potential return on your investments. Accurate financial forecasting starts here.
+          Financial planning can be complex, but our <strong>Financial Calculator suite</strong> simplifies the numbers. From calculating monthly mortgage payments to understanding the nuances of compound interest, we provide the tools you need to make informed decisions. Use our <a href="#" onclick="openCalc('Mortgage Calculator')" class="text-[var(--accent)] hover:underline">Mortgage Calculator</a> to estimate home buying costs, or our <a href="#" onclick="openCalc('ROI Calculator')" class="text-[var(--accent)] hover:underline">ROI Calculator</a> to measure the potential return on your investments. Accurate financial forecasting starts here.
         </p>
         
         <h2 id="health-tools">Optimize Your Health and Fitness Journey</h2>
         <p>
-          Achieving health goals requires data. Our <strong>Health & Fitness Calculators</strong> offer insights into your body's needs. Determine your Body Mass Index (BMI) with our widely-used <a href="#" class="text-[var(--accent)] hover:underline">BMI Calculator</a>, or calculate your daily caloric needs to plan your diet effectively. Whether you are tracking macros or estimating calories burned during a workout, CalciLab provides the metrics for a healthier lifestyle.
+          Achieving health goals requires data. Our <strong>Health & Fitness Calculators</strong> offer insights into your body's needs. Determine your Body Mass Index (BMI) with our widely-used <a href="#" onclick="openCalc('BMI Calculator')" class="text-[var(--accent)] hover:underline">BMI Calculator</a>, or calculate your daily caloric needs to plan your diet effectively. Whether you are tracking macros or estimating calories burned during a workout, CalciLab provides the metrics for a healthier lifestyle.
         </p>
 
         <h2 id="math-tools">Solve Complex Mathematical Problems Instantly</h2>
         <p>
-          From students to professionals, our <strong>Math Calculators</strong> bridge the gap between problems and solutions. Use our <a href="#" class="text-[var(--accent)] hover:underline">Scientific Calculator</a> for complex equations, or simplify fractions with a single click. We cover everything from basic arithmetic to advanced geometry and statistics, making math accessible to everyone.
+          From students to professionals, our <strong>Math Calculators</strong> bridge the gap between problems and solutions. Use our <a href="#" onclick="openCalc('Scientific Calculator')" class="text-[var(--accent)] hover:underline">Scientific Calculator</a> for complex equations, or simplify fractions with a single click. We cover everything from basic arithmetic to advanced geometry and statistics, making math accessible to everyone.
         </p>
 
         <h2>Frequently Asked Questions (FAQ)</h2>
@@ -370,24 +316,6 @@
     </div>
   </section>
 
-  <!-- Auth Modal -->
-  <div id="authModal" class="modal-overlay" onclick="if(event.target===this) closeAuth()">
-    <div class="modal-content p-8" onclick="event.stopPropagation()">
-      <h3 class="font-display text-xl font-bold mb-6 text-center">Sign In</h3>
-      <div class="space-y-3">
-        <button onclick="signIn('google')" class="w-full p-3 border border-[var(--border)] flex items-center justify-center gap-2 hover:bg-[var(--card)] transition-colors">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-          Continue with Google
-        </button>
-        <button onclick="signIn('github')" class="w-full p-3 border border-[var(--border)] flex items-center justify-center gap-2 hover:bg-[var(--card)] transition-colors">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-          Continue with GitHub
-        </button>
-      </div>
-      <button onclick="closeAuth()" class="w-full mt-4 text-xs text-[var(--muted)] hover:text-[var(--fg)]">Cancel</button>
-    </div>
-  </div>
-
   <!-- Calculator Modal -->
   <div id="calcModal" class="modal-overlay" onclick="if(event.target===this) closeCalc()">
     <div class="modal-content" onclick="event.stopPropagation()">
@@ -408,6 +336,34 @@
     </div>
   </div>
 
+  <!-- Chatbot UI -->
+  <div class="chatbot-btn" onclick="toggleChat()" id="chatBtn">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#050508" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+  </div>
+
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-[var(--accent)] flex items-center justify-center">
+           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#050508" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/></svg>
+        </div>
+        <span class="font-display font-bold text-sm">CalciBot</span>
+      </div>
+      <button onclick="toggleChat()" class="text-[var(--muted)] hover:text-[var(--fg)]">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" class="chat-input" placeholder="Ask anything..." onkeypress="handleChatKey(event)">
+      <button class="chat-send-btn" onclick="sendChat()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#050508" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </button>
+    </div>
+  </div>
+
   <script>
     // --- ICON LIBRARY ---
     const getToolIcon = (name) => {
@@ -416,15 +372,12 @@
         'loan': '<rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M12 9v6"></path><path d="M9 12h6"></path>',
         'auto': '<path d="M5 17h14v-5l-2-4H7l-2 4v5z"></path><circle cx="7.5" cy="17.5" r="2.5"></circle><circle cx="16.5" cy="17.5" r="2.5"></circle>',
         'interest': '<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>',
-        'payment': '<rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line>',
-        'retirement': '<circle cx="12" cy="8" r="5"></circle><path d="M20 21a8 8 0 1 0-16 0"></path>',
         'investment': '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline>',
         'currency': '<circle cx="12" cy="12" r="10"></circle><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 6v2m0 8v2"></path>',
-        'inflation': '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>',
         'compound': '<path d="M16 8h4v4"></path><path d="M8 16H4v-4"></path><path d="M20 8c-2 4-6 6-12 8"></path>',
         'salary': '<rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>',
         'tax': '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line>',
-        'savings': '<path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2h0V5z"></path><path d="M2 9v1c0 1.1.9 2 2 2h1"></path><path d="M16 11h0"></path>',
+        'savings': '<path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2h0V5z"></path>',
         'rent': '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="M10 22V12h4v10"></path>',
         'roi': '<line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>',
         'tip': '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>',
@@ -444,7 +397,7 @@
         'tdee': '<path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>',
         'calburn': '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>',
         'onerep': '<path d="M6.5 6.5L12 12l5.5-5.5"></path><path d="M12 12v9"></path><path d="M4 21h16"></path>',
-        'scientific': '<rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="8" y2="10"></line><line x1="12" y1="10" x2="12" y2="10"></line><line x1="16" y1="10" x2="16" y2="10"></line>',
+        'scientific': '<rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line>',
         'percentage': '<line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle>',
         'fraction': '<line x1="4" y1="12" x2="20" y2="12"></line><line x1="8" y1="8" x2="8" y2="4"></line><line x1="16" y1="20" x2="16" y2="16"></line>',
         'stddev': '<path d="M3 3v18h18"></path><path d="M18.7 8l-6.5 5.5-4-2.5L5 14"></path>',
@@ -458,7 +411,7 @@
         'pythagoras': '<path d="M3 21h18"></path><path d="M3 21V3"></path><path d="M3 21l18-18"></path>',
         'average': '<line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line>',
         'gcd': '<circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path>',
-        'basic': '<rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="8" y2="10.01"></line><line x1="12" y1="10" x2="12" y2="10.01"></line><line x1="16" y1="10" x2="16" y2="10.01"></line>',
+        'basic': '<rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="8" y1="10" x2="8" y2="10.01"></line>',
         'age': '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>',
         'date': '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line>',
         'time': '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>',
@@ -478,23 +431,20 @@
       return icons[name] || '<circle cx="12" cy="12" r="10"></circle>';
     };
 
-    // --- DATA: Complete Calculator List ---
+    // --- DATA: Complete Calculator List (65+ Items) ---
     const I = (id, label, ph, def) => ({ id, label, placeholder: ph, type: 'number', default: def });
     const T = (id, label, ph) => ({ id, label, placeholder: ph, type: 'text' });
     const D = (id, label) => ({ id, label, type: 'date' });
 
     const calculators = [
-      // --- FINANCIAL ---
+      // --- FINANCIAL (20) ---
       { name: "Mortgage Calculator", icon: "mortgage", category: "financial", inputs: [I('p', 'Principal ($)', '350000'), I('r', 'Annual Rate (%)', '5.5'), I('n', 'Years', '30')], formula: (i) => { const r=i.r/100/12; const n=i.n*12; const m=i.p*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1); return `Monthly Payment: $${m.toFixed(2)}`; }},
-      { name: "Loan Calculator", icon: "loan", category: "financial", inputs: [I('p', 'Loan Amount ($)', '10000'), I('r', 'Annual Rate (%)', '6'), I('n', 'Months', '36')], formula: (i) => { const r=i.r/100/12; const m=i.p*(r*Math.pow(1+r,i.n))/(Math.pow(1+r,i.n)-1); return `Monthly: $${m.toFixed(2)} | Total: $${(m*i.n).toFixed(2)}`; }},
+      { name: "Loan Calculator", icon: "loan", category: "financial", inputs: [I('p', 'Loan Amount ($)', '10000'), I('r', 'Annual Rate (%)', '6'), I('n', 'Months', '36')], formula: (i) => { const r=i.r/100/12; const m=i.p*(r*Math.pow(1+r,i.n))/(Math.pow(1+r,i.n)-1); return `Monthly: $${m.toFixed(2)}`; }},
       { name: "Auto Loan Calculator", icon: "auto", category: "financial", inputs: [I('p', 'Vehicle Price ($)', '30000'), I('d', 'Down Payment ($)', '5000'), I('r', 'Rate (%)', '4.5'), I('n', 'Years', '5')], formula: (i) => { const P=i.p-i.d; const r=i.r/100/12; const n=i.n*12; const m=P*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1); return `Monthly: $${m.toFixed(2)}`; }},
-      { name: "Interest Calculator", icon: "interest", category: "financial", inputs: [I('p', 'Principal ($)', '10000'), I('r', 'Rate (%)', '5'), I('t', 'Time (Years)', '5')], formula: (i) => { const int=(i.p*i.r*i.t)/100; return `Simple Interest: $${int.toFixed(2)} | Total: $${(i.p+int).toFixed(2)}`; }},
-      { name: "Payment Calculator", icon: "payment", category: "financial", inputs: [I('p', 'Amount ($)', '1000'), I('n', 'Months', '12')], formula: (i) => `Monthly Payment: $${(i.p/i.n).toFixed(2)}` },
-      { name: "Retirement Calculator", icon: "retirement", category: "financial", inputs: [I('age', 'Current Age', '30'), I('sav', 'Current Savings ($)', '50000'), I('mon', 'Monthly Contribution ($)', '500'), I('r', 'Annual Return (%)', '7')], formula: (i) => { const years=65-i.age; const r=i.r/100/12; const n=years*12; const fv=i.sav*Math.pow(1+r,n)+i.mon*((Math.pow(1+r,n)-1)/r); return `At 65: $${fv.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`; }},
+      { name: "Interest Calculator", icon: "interest", category: "financial", inputs: [I('p', 'Principal ($)', '10000'), I('r', 'Rate (%)', '5'), I('t', 'Time (Years)', '5')], formula: (i) => { const int=(i.p*i.r*i.t)/100; return `Simple Interest: $${int.toFixed(2)}`; }},
       { name: "Investment Calculator", icon: "investment", category: "financial", inputs: [I('p', 'Initial ($)', '10000'), I('mon', 'Monthly Add ($)', '200'), I('r', 'Annual Return (%)', '8'), I('n', 'Years', '10')], formula: (i) => { const r=i.r/100/12; const n=i.n*12; const fv=i.p*Math.pow(1+r,n)+i.mon*((Math.pow(1+r,n)-1)/r); return `Future Value: $${fv.toFixed(2)}`; }},
       { name: "Currency Calculator", icon: "currency", category: "financial", inputs: [I('amt', 'Amount', '100'), T('from', 'From Currency', 'USD'), T('to', 'To Currency', 'EUR'), I('rate', 'Exchange Rate', '0.92')], formula: (i) => `${i.amt} ${i.from} = ${(i.amt * i.rate).toFixed(2)} ${i.to}` },
-      { name: "Inflation Calculator", icon: "inflation", category: "financial", inputs: [I('amt', 'Amount ($)', '100'), I('r', 'Inflation Rate (%)', '3'), I('n', 'Years', '10')], formula: (i) => `Future Value Needed: $${(i.amt * Math.pow(1 + i.r/100, i.n)).toFixed(2)}` },
-      { name: "Compound Interest Calculator", icon: "compound", category: "financial", inputs: [I('p', 'Principal ($)', '5000'), I('r', 'Rate (%)', '5'), I('n', 'Compounds/Year', '12'), I('t', 'Years', '10')], formula: (i) => `Total: $${(i.p * Math.pow(1 + i.r/(100*i.n), i.n*i.t)).toFixed(2)}` },
+      { name: "Compound Interest", icon: "compound", category: "financial", inputs: [I('p', 'Principal ($)', '5000'), I('r', 'Rate (%)', '5'), I('n', 'Compounds/Year', '12'), I('t', 'Years', '10')], formula: (i) => `Total: $${(i.p * Math.pow(1 + i.r/(100*i.n), i.n*i.t)).toFixed(2)}` },
       { name: "Salary Calculator", icon: "salary", category: "financial", inputs: [I('sal', 'Annual Salary ($)', '60000'), I('hrs', 'Hours/Week', '40')], formula: (i) => `Hourly: $${(i.sal/(i.hrs*52)).toFixed(2)} | Monthly: $${(i.sal/12).toFixed(2)}` },
       { name: "Sales Tax Calculator", icon: "tax", category: "financial", inputs: [I('p', 'Price ($)', '100'), I('r', 'Tax Rate (%)', '8')], formula: (i) => `Total: $${(i.p * (1 + i.r/100)).toFixed(2)}` },
       { name: "Savings Calculator", icon: "savings", category: "financial", inputs: [I('init', 'Initial ($)', '1000'), I('mon', 'Monthly ($)', '200'), I('r', 'Interest (%)', '4'), I('n', 'Years', '5')], formula: (i) => { const r=i.r/100/12; const n=i.n*12; const fv=i.init*Math.pow(1+r,n)+i.mon*((Math.pow(1+r,n)-1)/r); return `Total Savings: $${fv.toFixed(2)}`; }},
@@ -502,43 +452,48 @@
       { name: "ROI Calculator", icon: "roi", category: "financial", inputs: [I('gain', 'Final Value ($)', '15000'), I('cost', 'Initial Cost ($)', '10000')], formula: (i) => `ROI: ${(((i.gain-i.cost)/i.cost)*100).toFixed(2)}%` },
       { name: "Tip Calculator", icon: "tip", category: "financial", inputs: [I('bill', 'Bill ($)', '50'), I('tip', 'Tip (%)', '15')], formula: (i) => `Tip: $${(i.bill*i.tip/100).toFixed(2)} | Total: $${(i.bill*(1+i.tip/100)).toFixed(2)}` },
       { name: "Discount Calculator", icon: "discount", category: "financial", inputs: [I('p', 'Price ($)', '100'), I('d', 'Discount (%)', '20')], formula: (i) => `Final Price: $${(i.p*(1-i.d/100)).toFixed(2)}` },
-      { name: "Percent Off Calculator", icon: "percentage", category: "financial", inputs: [I('p', 'Original Price ($)', '100'), I('d', 'Percent Off (%)', '15')], formula: (i) => `Final Price: $${(i.p*(1-i.d/100)).toFixed(2)}` },
       { name: "Margin Calculator", icon: "margin", category: "financial", inputs: [I('cost', 'Cost ($)', '50'), I('sale', 'Sale Price ($)', '100')], formula: (i) => `Profit: $${(i.sale-i.cost).toFixed(2)} | Margin: ${(((i.sale-i.cost)/i.sale)*100).toFixed(2)}%` },
-      { name: "Commission Calculator", icon: "commission", category: "financial", inputs: [I('sale', 'Sale Price ($)', '200000'), I('r', 'Commission (%)', '6')], formula: (i) => `Commission: $${(i.sale*i.r/100).toFixed(2)}` },
+      { name: "Commission Calc", icon: "commission", category: "financial", inputs: [I('sale', 'Sale Price ($)', '200000'), I('r', 'Commission (%)', '6')], formula: (i) => `Commission: $${(i.sale*i.r/100).toFixed(2)}` },
+      { name: "Inflation Calculator", icon: "investment", category: "financial", inputs: [I('amt', 'Amount ($)', '100'), I('r', 'Inflation (%)', '3'), I('n', 'Years', '10')], formula: (i) => `Future Value Needed: $${(i.amt * Math.pow(1 + i.r/100, i.n)).toFixed(2)}` },
+      { name: "Retirement Calculator", icon: "heart", category: "financial", inputs: [I('age', 'Current Age', '30'), I('sav', 'Savings ($)', '50000'), I('mon', 'Monthly Add ($)', '500'), I('r', 'Return (%)', '7')], formula: (i) => { const years=65-i.age; const r=i.r/100/12; const n=years*12; const fv=i.sav*Math.pow(1+r,n)+i.mon*((Math.pow(1+r,n)-1)/r); return `At 65: $${fv.toFixed(0)}`; }},
+      { name: "Payment Calculator", icon: "credit-card", category: "financial", inputs: [I('p', 'Amount ($)', '1000'), I('n', 'Months', '12')], formula: (i) => `Monthly Payment: $${(i.p/i.n).toFixed(2)}` },
+      { name: "Percent Off Calculator", icon: "percentage", category: "financial", inputs: [I('p', 'Original Price ($)', '100'), I('d', 'Percent Off (%)', '15')], formula: (i) => `Final Price: $${(i.p*(1-i.d/100)).toFixed(2)}` },
 
-      // --- FITNESS & HEALTH ---
-      { name: "BMI Calculator", icon: "bmi", category: "health", inputs: [I('w', 'Weight (kg)', '70'), I('h', 'Height (cm)', '175')], formula: (i) => { const bmi=i.w/Math.pow(i.h/100, 2); return `BMI: ${bmi.toFixed(1)} (${bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese'})`; }},
-      { name: "Calorie Calculator", icon: "calorie", category: "health", inputs: [I('age', 'Age', '30'), T('sex', 'Sex (m/f)', 'm'), I('w', 'Weight (kg)', '70'), I('h', 'Height (cm)', '175')], formula: (i) => { const bmr=i.sex==='m'?10*i.w+6.25*i.h-5*i.age+5:10*i.w+6.25*i.h-5*i.age-161; return `Daily Calories: ${bmr.toFixed(0)} kcal (Sedentary)`; }},
-      { name: "Body Fat Calculator", icon: "bodyfat", category: "health", inputs: [I('w', 'Weight (kg)', '80'), I('h', 'Height (cm)', '180'), I('neck', 'Neck (cm)', '38'), I('waist', 'Waist (cm)', '90')], formula: (i) => { const bf=495/(1.0324-0.19077*Math.log10(i.waist-i.neck)+0.15456*Math.log10(i.h))-450; return `Body Fat: ${bf.toFixed(1)}% (US Navy Method)`; }},
+      // --- HEALTH (15) ---
+      { name: "BMI Calculator", icon: "bmi", category: "health", inputs: [I('w', 'Weight (kg)', '70'), I('h', 'Height (cm)', '175')], formula: (i) => { const bmi=i.w/Math.pow(i.h/100, 2); return `BMI: ${bmi.toFixed(1)} (${bmi<18.5?'Underweight':bmi<25?'Normal':'Overweight'})`; }},
+      { name: "Calorie Calculator", icon: "calorie", category: "health", inputs: [I('age', 'Age', '30'), T('sex', 'Sex (m/f)', 'm'), I('w', 'Weight (kg)', '70'), I('h', 'Height (cm)', '175')], formula: (i) => { const bmr=i.sex==='m'?10*i.w+6.25*i.h-5*i.age+5:10*i.w+6.25*i.h-5*i.age-161; return `Daily Calories: ${bmr.toFixed(0)} kcal`; }},
+      { name: "Body Fat Calculator", icon: "bodyfat", category: "health", inputs: [I('w', 'Weight (kg)', '80'), I('h', 'Height (cm)', '180'), I('neck', 'Neck (cm)', '38'), I('waist', 'Waist (cm)', '90')], formula: (i) => { const bf=495/(1.0324-0.19077*Math.log10(i.waist-i.neck)+0.15456*Math.log10(i.h))-450; return `Body Fat: ${bf.toFixed(1)}% (US Navy)`; }},
       { name: "BMR Calculator", icon: "bmr", category: "health", inputs: [I('age', 'Age', '25'), T('sex', 'Sex (m/f)', 'm'), I('w', 'Weight (kg)', '70'), I('h', 'Height (cm)', '175')], formula: (i) => { const bmr=i.sex==='m'?10*i.w+6.25*i.h-5*i.age+5:10*i.w+6.25*i.h-5*i.age-161; return `BMR: ${bmr.toFixed(0)} kcal`; }},
       { name: "Ideal Weight Calculator", icon: "idealweight", category: "health", inputs: [I('h', 'Height (cm)', '175')], formula: (i) => `Ideal Weight (Devine): ${(50+0.9*(i.h-152)).toFixed(1)} kg` },
       { name: "Pace Calculator", icon: "pace", category: "health", inputs: [I('d', 'Distance (km)', '10'), I('t', 'Time (min)', '50')], formula: (i) => `Pace: ${(i.t/i.d).toFixed(2)} min/km` },
       { name: "Pregnancy Calculator", icon: "pregnancy", category: "health", inputs: [D('lmp', 'Last Period Date')], formula: (i) => { const d=new Date(i.lmp); d.setDate(d.getDate()+280); return `Due Date: ${d.toDateString()}`; }},
-      { name: "Target Heart Rate Calculator", icon: "heart", category: "health", inputs: [I('age', 'Age', '30')], formula: (i) => `Target Zone (50-85%): ${(220-i.age)*0.5} - ${(220-i.age)*0.85} bpm` },
-      { name: "Protein Calculator", icon: "protein", category: "health", inputs: [I('w', 'Weight (kg)', '70'), I('act', 'Activity Level (1-3)', '2')], formula: (i) => `Daily Protein: ${(i.w*(0.8+i.act*0.2)).toFixed(0)} grams` },
-      { name: "Fat Intake Calculator", icon: "fat", category: "health", inputs: [I('cal', 'Calories', '2000')], formula: (i) => `Recommended Fat: ${((i.cal*0.3)/9).toFixed(0)}g (30% of diet)` },
+      { name: "Target Heart Rate", icon: "heart", category: "health", inputs: [I('age', 'Age', '30')], formula: (i) => `Target Zone: ${(220-i.age)*0.5} - ${(220-i.age)*0.85} bpm` },
+      { name: "Protein Calculator", icon: "protein", category: "health", inputs: [I('w', 'Weight (kg)', '70'), I('act', 'Activity (1-3)', '2')], formula: (i) => `Daily Protein: ${(i.w*(0.8+i.act*0.2)).toFixed(0)} grams` },
+      { name: "Fat Intake Calculator", icon: "fat", category: "health", inputs: [I('cal', 'Calories', '2000')], formula: (i) => `Recommended Fat: ${((i.cal*0.3)/9).toFixed(0)}g` },
       { name: "TDEE Calculator", icon: "tdee", category: "health", inputs: [I('bmr', 'BMR', '1600'), I('act', 'Activity (1.2-1.9)', '1.55')], formula: (i) => `Total Daily Expenditure: ${(i.bmr*i.act).toFixed(0)} kcal` },
-      { name: "Calories Burned Calculator", icon: "calburn", category: "health", inputs: [I('act', 'Activity (MET)', '8'), I('w', 'Weight (kg)', '70'), I('t', 'Minutes', '30')], formula: (i) => `Calories Burned: ${((i.act*i.w*i.t)/60).toFixed(0)} kcal` },
-      { name: "One Rep Max Calculator", icon: "onerep", category: "health", inputs: [I('w', 'Weight Lifted (kg)', '80'), I('r', 'Reps Completed', '5')], formula: (i) => `Estimated 1RM: ${(i.w*(1+i.r/30)).toFixed(1)} kg` },
+      { name: "Calories Burned", icon: "calburn", category: "health", inputs: [I('act', 'Activity (MET)', '8'), I('w', 'Weight (kg)', '70'), I('t', 'Minutes', '30')], formula: (i) => `Calories Burned: ${((i.act*i.w*i.t)/60).toFixed(0)} kcal` },
+      { name: "One Rep Max", icon: "onerep", category: "health", inputs: [I('w', 'Weight Lifted (kg)', '80'), I('r', 'Reps Completed', '5')], formula: (i) => `Estimated 1RM: ${(i.w*(1+i.r/30)).toFixed(1)} kg` },
+      { name: "Water Intake", icon: "fat", category: "health", inputs: [I('w', 'Weight (kg)', '70')], formula: (i) => `Recommended: ${(i.w * 0.033).toFixed(1)} Liters/day` },
+      { name: "Sleep Calculator", icon: "heart", category: "health", inputs: [I('age', 'Age', '30')], formula: (i) => `Recommended Sleep: ${i.age<18?9:i.age<65?8:7} hours` },
 
-      // --- MATH ---
-      { name: "Scientific Calculator", icon: "scientific", category: "math", inputs: [T('exp', 'Expression (e.g. 2+2, Math.PI)', '2+2')], formula: (i) => { try{ return eval(i.exp) } catch(e){ return 'Syntax Error' } }},
+      // --- MATH (15) ---
+      { name: "Scientific Calculator", icon: "scientific", category: "math", inputs: [T('exp', 'Expression', '2+2')], formula: (i) => { try{ return eval(i.exp) } catch(e){ return 'Syntax Error' } }},
       { name: "Percentage Calculator", icon: "percentage", category: "math", inputs: [I('p', 'Percentage (%)', '20'), I('v', 'Value', '500')], formula: (i) => `Result: ${(i.p/100*i.v).toFixed(2)}` },
       { name: "Fraction Calculator", icon: "fraction", category: "math", inputs: [I('n1', 'Numerator 1', '1'), I('d1', 'Denominator 1', '2'), T('op', 'Operation (+, -, *, /)', '+'), I('n2', 'Numerator 2', '1'), I('d2', 'Denominator 2', '4')], formula: (i) => { const v1=i.n1/i.d1; const v2=i.n2/i.d2; const res= i.op==='+'?v1+v2:i.op==='-'?v1-v2:i.op==='*'?v1*v2:v1/v2; return `Decimal Result: ${res.toFixed(4)}`; }},
-      { name: "Standard Deviation Calculator", icon: "stddev", category: "math", inputs: [T('nums', 'Numbers (comma sep)', '1, 2, 3, 4, 5')], formula: (i) => { const arr=i.nums.split(',').map(Number); const mean=arr.reduce((a,b)=>a+b,0)/arr.length; const sqD=arr.map(x=>Math.pow(x-mean,2)); const avg= sqD.reduce((a,b)=>a+b,0)/arr.length; return `Std Dev: ${Math.sqrt(avg).toFixed(4)}`; }},
+      { name: "Standard Deviation", icon: "stddev", category: "math", inputs: [T('nums', 'Numbers (comma sep)', '1, 2, 3, 4, 5')], formula: (i) => { const arr=i.nums.split(',').map(Number); const mean=arr.reduce((a,b)=>a+b,0)/arr.length; const sqD=arr.map(x=>Math.pow(x-mean,2)); const avg= sqD.reduce((a,b)=>a+b,0)/arr.length; return `Std Dev: ${Math.sqrt(avg).toFixed(4)}`; }},
       { name: "Random Number Generator", icon: "random", category: "math", inputs: [I('min', 'Min', '1'), I('max', 'Max', '100')], formula: (i) => `Random: ${Math.floor(Math.random()*(i.max-i.min+1))+i.min}` },
       { name: "Exponent Calculator", icon: "exponent", category: "math", inputs: [I('b', 'Base', '2'), I('e', 'Exponent', '8')], formula: (i) => `Result: ${Math.pow(i.b, i.e)}` },
-      { name: "Quadratic Formula Calculator", icon: "quadratic", category: "math", inputs: [I('a', 'A', '1'), I('b', 'B', '-5'), I('c', 'C', '6')], formula: (i) => `Roots: ${((-i.b+Math.sqrt(i.b*i.b-4*i.a*i.c))/(2*i.a)).toFixed(2)}, ${((-i.b-Math.sqrt(i.b*i.b-4*i.a*i.c))/(2*i.a)).toFixed(2)}` },
+      { name: "Quadratic Formula", icon: "quadratic", category: "math", inputs: [I('a', 'A', '1'), I('b', 'B', '-5'), I('c', 'C', '6')], formula: (i) => `Roots: ${((-i.b+Math.sqrt(i.b*i.b-4*i.a*i.c))/(2*i.a)).toFixed(2)}, ${((-i.b-Math.sqrt(i.b*i.b-4*i.a*i.c))/(2*i.a)).toFixed(2)}` },
       { name: "Log Calculator", icon: "log", category: "math", inputs: [I('n', 'Number', '100'), I('b', 'Base', '10')], formula: (i) => `Log: ${(Math.log(i.n)/Math.log(i.b)).toFixed(4)}` },
-      { name: "Area Calculator", icon: "area", category: "math", inputs: [T('s', 'Shape (circle, square, rectangle)', 'circle'), I('r', 'Radius/Length', '5'), I('h', 'Height/Width (if rect)', '10')], formula: (i) => { let a=0; if(i.s==='circle') a=Math.PI*i.r*i.r; else if(i.s==='square') a=i.r*i.r; else if(i.s==='rectangle') a=i.r*i.h; return `Area: ${a.toFixed(2)}`; }},
-      { name: "Volume Calculator", icon: "volume", category: "math", inputs: [T('shape', 'Shape (sphere, cube, cylinder)', 'sphere'), I('r', 'Radius/Side', '5'), I('h', 'Height (if cylinder)', '10')], formula: (i) => { let vol=0; if(i.shape==='sphere') vol=4/3*Math.PI*Math.pow(i.r,3); else if(i.shape==='cube') vol=Math.pow(i.r,3); else if(i.shape==='cylinder') vol=Math.PI*Math.pow(i.r,2)*i.h; return `Volume: ${vol.toFixed(2)} cubic units`; }},
-      { name: "Triangle Calculator", icon: "triangle", category: "math", inputs: [I('a', 'Side A', '3'), I('b', 'Side B', '4'), I('c', 'Side C', '5')], formula: (i) => { const s=(i.a+i.b+i.c)/2; const area=Math.sqrt(s*(s-i.a)*(s-i.b)*(s-i.c)); return `Area: ${area.toFixed(2)} | Perimeter: ${i.a+i.b+i.c}`; }},
-      { name: "Pythagorean Theorem Calculator", icon: "pythagoras", category: "math", inputs: [I('a', 'Side A', '3'), I('b', 'Side B', '4')], formula: (i) => `Hypotenuse (c): ${Math.sqrt(i.a*i.a + i.b*i.b).toFixed(2)}` },
+      { name: "Area Calculator", icon: "area", category: "math", inputs: [T('s', 'Shape (circle, square, rectangle)', 'circle'), I('r', 'Radius/Length', '5'), I('h', 'Height/Width', '10')], formula: (i) => { let a=0; if(i.s==='circle') a=Math.PI*i.r*i.r; else if(i.s==='square') a=i.r*i.r; else if(i.s==='rectangle') a=i.r*i.h; return `Area: ${a.toFixed(2)}`; }},
+      { name: "Volume Calculator", icon: "volume", category: "math", inputs: [T('shape', 'Shape (sphere, cube, cylinder)', 'sphere'), I('r', 'Radius/Side', '5'), I('h', 'Height (if cylinder)', '10')], formula: (i) => { let vol=0; if(i.shape==='sphere') vol=4/3*Math.PI*Math.pow(i.r,3); else if(i.shape==='cube') vol=Math.pow(i.r,3); else if(i.shape==='cylinder') vol=Math.PI*Math.pow(i.r,2)*i.h; return `Volume: ${vol.toFixed(2)}`; }},
+      { name: "Triangle Calculator", icon: "triangle", category: "math", inputs: [I('a', 'Side A', '3'), I('b', 'Side B', '4'), I('c', 'Side C', '5')], formula: (i) => { const s=(i.a+i.b+i.c)/2; const area=Math.sqrt(s*(s-i.a)*(s-i.b)*(s-i.c)); return `Area: ${area.toFixed(2)}`; }},
+      { name: "Pythagorean Theorem", icon: "pythagoras", category: "math", inputs: [I('a', 'Side A', '3'), I('b', 'Side B', '4')], formula: (i) => `Hypotenuse (c): ${Math.sqrt(i.a*i.a + i.b*i.b).toFixed(2)}` },
       { name: "Average Calculator", icon: "average", category: "math", inputs: [T('nums', 'Numbers', '10, 20, 30')], formula: (i) => { const arr=i.nums.split(',').map(Number); return `Average: ${(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2)}`; }},
       { name: "GCD & LCM Calculator", icon: "gcd", category: "math", inputs: [I('a', 'Number 1', '12'), I('b', 'Number 2', '18')], formula: (i) => { const gcd=(a,b)=>b?gcd(b,a%b):a; const lcm=(a,b)=>(a*b)/gcd(a,b); return `GCD: ${gcd(i.a,i.b)} | LCM: ${lcm(i.a,i.b)}`; }},
       { name: "Basic Calculator", icon: "basic", category: "math", inputs: [I('a', 'A', '10'), I('b', 'B', '5'), T('op', 'Op', '+')], formula: (i) => `Result: ${i.op==='+'?i.a+i.b:i.op==='-'?i.a-i.b:i.op==='*'?i.a*i.b:i.a/i.b}` },
 
-      // --- OTHER ---
+      // --- OTHER (15) ---
       { name: "Age Calculator", icon: "age", category: "other", inputs: [D('dob', 'Date of Birth')], formula: (i) => { const d=new Date(i.dob); const age=Date.now()-d; return `Age: ${Math.floor(age/(365.25*24*3600*1000))} Years`; }},
       { name: "Date Calculator", icon: "date", category: "other", inputs: [D('d1', 'Start Date'), D('d2', 'End Date')], formula: (i) => { const diff=Math.abs(new Date(i.d2)-new Date(i.d1)); return `Difference: ${Math.ceil(diff/(1000*60*60*24))} Days`; }},
       { name: "Time Calculator", icon: "time", category: "other", inputs: [T('t1', 'Time 1 (HH:MM)', '10:30'), T('op', 'Op (+,-)', '+'), T('t2', 'Time 2 (HH:MM)', '02:15')], formula: (i) => { const m1=parseInt(i.t1.split(':')[0])*60+parseInt(i.t1.split(':')[1]); const m2=parseInt(i.t2.split(':')[0])*60+parseInt(i.t2.split(':')[1]); const r=i.op==='+'?m1+m2:m1-m2; return `Result: ${Math.floor(r/60)%24}:${Math.abs(r%60).toString().padStart(2,'0')}`; }},
@@ -548,39 +503,33 @@
       { name: "Height Converter", icon: "height", category: "other", inputs: [I('cm', 'Height (cm)', '180')], formula: (i) => `${Math.floor(i.cm/2.54/12)}' ${Math.round((i.cm/2.54)%12)}"` },
       { name: "Weight Converter", icon: "weight", category: "other", inputs: [I('kg', 'Weight (kg)', '70')], formula: (i) => `Pounds: ${(i.kg*2.20462).toFixed(1)} lbs` },
       { name: "Concrete Calculator", icon: "concrete", category: "other", inputs: [I('l', 'Length (ft)', '10'), I('w', 'Width (ft)', '10'), I('d', 'Depth (in)', '6')], formula: (i) => `Need ${(i.l*i.w*(i.d/12)/27).toFixed(2)} Cubic Yards` },
-      { name: "Password Generator", icon: "password", category: "other", inputs: [I('len', 'Length', '12'), I('num', 'Include Numbers (1/0)', '1'), I('sym', 'Include Symbols (1/0)', '1')], formula: (i) => { const c='abcdefghijklmnopqrstuvwxyz'+(i.num?'0123456789':'')+(i.sym?'!@#$%^&*':''); let p=''; for(let x=0;x<i.len;x++) p+=c.charAt(Math.floor(Math.random()*c.length)); return `Password: ${p}`; }},
+      { name: "Password Generator", icon: "password", category: "other", inputs: [I('len', 'Length', '12')], formula: (i) => { const c='abcdefghijklmnopqrstuvwxyz0123456789!@#$'; let p=''; for(let x=0;x<i.len;x++) p+=c.charAt(Math.floor(Math.random()*c.length)); return `Password: ${p}`; }},
       { name: "Dice Roller", icon: "dice", category: "other", inputs: [I('n', 'Number of Dice', '2'), I('sides', 'Sides', '6')], formula: (i) => `Rolls: ${Array.from({length:i.n}, ()=>Math.ceil(Math.random()*i.sides)).join(', ')}` },
       { name: "Love Calculator", icon: "love", category: "other", inputs: [T('n1', 'Name 1', 'Romeo'), T('n2', 'Name 2', 'Juliet')], formula: (i) => `Compatibility: ${Math.floor((i.n1.length+i.n2.length)%100)}%` },
       { name: "Fuel Cost Calculator", icon: "fuel", category: "other", inputs: [I('dist', 'Distance (miles)', '300'), I('mpg', 'MPG', '25'), I('price', 'Price/Gal ($)', '3.50')], formula: (i) => `Trip Cost: $${((i.dist/i.mpg)*i.price).toFixed(2)}` },
       { name: "Speed Calculator", icon: "speed", category: "other", inputs: [I('d', 'Distance (km)', '100'), I('t', 'Time (h)', '1.5')], formula: (i) => `Speed: ${(i.d/i.t).toFixed(2)} km/h` },
-      { name: "Square Footage Calculator", icon: "square", category: "other", inputs: [I('l', 'Length (ft)', '20'), I('w', 'Width (ft)', '30')], formula: (i) => `Area: ${(i.l*i.w).toFixed(0)} sq ft` },
+      { name: "Square Footage", icon: "square", category: "other", inputs: [I('l', 'Length (ft)', '20'), I('w', 'Width (ft)', '30')], formula: (i) => `Area: ${(i.l*i.w).toFixed(0)} sq ft` },
     ];
 
     // --- CORE LOGIC ---
 
-    let state = { user: null, cat: 'all', search: '' };
+    let state = { cat: 'all', search: '' };
     const grid = document.getElementById('gridContainer');
     const modal = document.getElementById('calcModal');
-    const authModal = document.getElementById('authModal');
 
     function init() {
-      try {
-        renderGrid();
-        renderAuth();
-        initCanvas();
-        
-        document.getElementById('catContainer').addEventListener('click', e => {
-          if(e.target.classList.contains('category-pill')) {
-            document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
-            e.target.classList.add('active');
-            state.cat = e.target.dataset.category;
-            renderGrid();
-          }
-        });
-
-      } catch (e) {
-        console.error("Initialization Error", e);
-      }
+      renderGrid();
+      initCanvas();
+      initChat();
+      
+      document.getElementById('catContainer').addEventListener('click', e => {
+        if(e.target.classList.contains('category-pill')) {
+          document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+          e.target.classList.add('active');
+          state.cat = e.target.dataset.category;
+          renderGrid();
+        }
+      });
     }
 
     function initCanvas() {
@@ -589,10 +538,9 @@
       let particles = [];
       
       function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         particles = [];
-        for(let i=0; i<40; i++) particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-0.5)*1, vy: (Math.random()-0.5)*1 });
+        for(let i=0; i<30; i++) particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx: (Math.random()-0.5)*1, vy: (Math.random()-0.5)*1 });
       }
       
       function animate() {
@@ -603,15 +551,6 @@
           if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
           ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, Math.PI*2); ctx.fillStyle = 'rgba(0, 255, 200, 0.6)'; ctx.fill();
         });
-        for(let i=0; i<particles.length; i++) {
-          for(let j=i+1; j<particles.length; j++) {
-            const d = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
-            if(d < 120) {
-              ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
-              ctx.strokeStyle = `rgba(0, 255, 200, ${0.15 - d/1000})`; ctx.stroke();
-            }
-          }
-        }
         requestAnimationFrame(animate);
       }
       
@@ -629,9 +568,7 @@
       
       grid.innerHTML = filtered.map(c => `
         <div class="calc-card" onclick="openCalc('${c.name}')">
-          <div class="card-icon">
-             <svg viewBox="0 0 24 24">${getToolIcon(c.icon)}</svg>
-          </div>
+          <div class="card-icon"><svg viewBox="0 0 24 24">${getToolIcon(c.icon)}</svg></div>
           <span class="text-[10px] text-[var(--accent)] uppercase tracking-wider relative z-10">${c.category}</span>
           <h3 class="text-sm font-display font-medium text-[var(--fg)] relative z-10 mt-1">${c.name}</h3>
         </div>
@@ -675,29 +612,93 @@
         const result = calc.formula(inputs);
         document.getElementById('calcResult').textContent = result;
       } catch(e) {
-        document.getElementById('calcResult').textContent = "Error in calculation. Check inputs.";
+        document.getElementById('calcResult').textContent = "Error in calculation.";
       }
     }
 
     function filterCalculators(v) { state.search = v; renderGrid(); }
     function resetView() { state.search = ''; state.cat = 'all'; document.getElementById('searchInput').value=''; document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active')); document.querySelector('[data-category="all"]').classList.add('active'); renderGrid(); }
 
-    // Auth
-    function renderAuth() {
-      const area = document.getElementById('authArea');
-      if(state.user) {
-        area.innerHTML = `<div class="relative"><button onclick="toggleMenu()" class="auth-avatar">${state.user[0]}</button><div id="userMenu" class="hidden absolute right-0 mt-2 w-32 glass-panel border border-[var(--border)] py-1"><button onclick="signOut()" class="w-full text-left px-3 py-2 text-xs hover:bg-[var(--card)]">Sign Out</button></div></div>`;
-      } else {
-        area.innerHTML = `<button onclick="openAuth()" class="text-xs text-[var(--muted)] hover:text-[var(--accent)]">Sign In</button>`;
-      }
+    // --- CHATBOT LOGIC ---
+    
+    function initChat() {
+      addBotMessage("Hello! I'm CalciBot. I can help you find calculators or solve simple math. Try asking 'I need a loan tool' or 'what is 15% of 200?'.");
     }
-    function openAuth() { authModal.classList.add('active'); }
-    function closeAuth() { authModal.classList.remove('active'); }
-    function toggleMenu() { document.getElementById('userMenu').classList.toggle('hidden'); }
-    function signIn(p) { state.user = p === 'google' ? 'GoogleUser' : 'GitHubUser'; closeAuth(); renderAuth(); }
-    function signOut() { state.user = null; renderAuth(); }
 
-    // SEO Interaction
+    function toggleChat() {
+      const win = document.getElementById('chatWindow');
+      win.classList.toggle('active');
+      if(win.classList.contains('active')) document.getElementById('chatInput').focus();
+    }
+
+    function handleChatKey(e) {
+      if (e.key === 'Enter') sendChat();
+    }
+
+    function sendChat() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      
+      addUserMessage(text);
+      input.value = '';
+      
+      setTimeout(() => {
+        const response = generateResponse(text);
+        addBotMessage(response);
+      }, 600);
+    }
+
+    function addUserMessage(text) {
+      const body = document.getElementById('chatBody');
+      const div = document.createElement('div');
+      div.className = 'chat-msg user';
+      div.textContent = text;
+      body.appendChild(div);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    function addBotMessage(text) {
+      const body = document.getElementById('chatBody');
+      const div = document.createElement('div');
+      div.className = 'chat-msg bot';
+      div.innerHTML = text; 
+      body.appendChild(div);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    function generateResponse(input) {
+      const txt = input.toLowerCase();
+      
+      // Math detection
+      const mathRegex = /(\d+[\+\-\*\/\%\^]\d+|sqrt\(\d+\)|\d+\s*\*\s*\d+)/;
+      if (mathRegex.test(txt) || txt.startsWith('calculate ')) {
+        try {
+          const cleanExpr = txt.replace('calculate ', '').replace(/x/g, '*');
+          if (/^[0-9+\-*/%(). sqrt]+$/.test(cleanExpr)) {
+            const result = eval(cleanExpr);
+            return `The result is approximately <strong>${parseFloat(result).toFixed(4)}</strong>. Need more precision? Use the <a href="#" onclick="openCalc('Scientific Calculator')" class="text-[var(--accent)] underline">Scientific Calculator</a>.`;
+          }
+        } catch(e) {
+          return "I couldn't compute that. Please check the format.";
+        }
+      }
+
+      // Tool matching
+      if (txt.includes('loan') || txt.includes('mortgage')) return `I can help with that! Try our <a href="#" onclick="openCalc('Loan Calculator')" class="text-[var(--accent)] underline">Loan Calculator</a> or <a href="#" onclick="openCalc('Mortgage Calculator')" class="text-[var(--accent)] underline">Mortgage Calculator</a>.`;
+      if (txt.includes('health') || txt.includes('weight') || txt.includes('bmi')) return `Check your health metrics with our <a href="#" onclick="openCalc('BMI Calculator')" class="text-[var(--accent)] underline">BMI Calculator</a> or <a href="#" onclick="openCalc('Calorie Calculator')" class="text-[var(--accent)] underline">Calorie Calculator</a>.`;
+      if (txt.includes('password')) return `Secure your accounts with the <a href="#" onclick="openCalc('Password Generator')" class="text-[var(--accent)] underline">Password Generator</a>.`;
+      if (txt.includes('age') || txt.includes('birthday')) return `Find out exactly how old you are with the <a href="#" onclick="openCalc('Age Calculator')" class="text-[var(--accent)] underline">Age Calculator</a>.`;
+      if (txt.includes('percent')) return `Need percentages? Use the <a href="#" onclick="openCalc('Percentage Calculator')" class="text-[var(--accent)] underline">Percentage Calculator</a>.`;
+      if (txt.includes('date')) return `Calculate date differences easily with the <a href="#" onclick="openCalc('Date Calculator')" class="text-[var(--accent)] underline">Date Calculator</a>.`;
+
+      // Greetings
+      if (txt.match(/^(hi|hello|hey|yo)/)) return "Hi there! I can find tools (try 'loan') or do math (try '10% of 50'). What do you need?";
+
+      return "I'm a simple bot. I can find tools (try 'loan') or do math (try '10% of 50'). For complex calculations, please use the search bar above.";
+    }
+
+    // --- SEO INTERACTION ---
     function toggleFaq(element) {
       const parent = element.parentElement;
       parent.classList.toggle('active');
