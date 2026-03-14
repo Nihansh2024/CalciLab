@@ -1,2 +1,0 @@
-# CalciLab
-Multi Calculator Website
