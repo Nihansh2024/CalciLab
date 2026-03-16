@@ -1,0 +1,14 @@
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  output: "standalone",
+  /* config options here */
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  reactStrictMode: false,
+  // Force rebuild after cache fix
+  generateBuildId: async () => 'build-' + Date.now(),
+};
+
+export default nextConfig;
